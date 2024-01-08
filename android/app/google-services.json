@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "682810797194",
+    "project_id": "chatkuy-3f559",
+    "storage_bucket": "chatkuy-3f559.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:682810797194:android:3d718a4da6adff5acd5173",
+        "android_client_info": {
+          "package_name": "com.example.chatkuy"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD7lvkBms8uzAmdHH0mgovtsdGgF4YgjmU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
