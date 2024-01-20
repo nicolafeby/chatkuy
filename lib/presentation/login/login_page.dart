@@ -1,6 +1,7 @@
 import 'package:chatkuy/helper/helper.dart';
 import 'package:chatkuy/presentation/home/home_page.dart';
 import 'package:chatkuy/presentation/register/register_page.dart';
+import 'package:chatkuy/router/router_constant.dart';
 import 'package:chatkuy/widgets/text_input_decoration.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -128,7 +129,10 @@ class _LoginPageState extends State<LoginPage> {
                                     decoration: TextDecoration.underline),
                                 recognizer: TapGestureRecognizer()
                                   ..onTap = () {
-                                    // nextScreen(context, const RegisterPage());
+                                    Navigator.pushNamed(
+                                      context,
+                                      RouterConstant.registerPage,
+                                    );
                                   }),
                           ],
                         )),
