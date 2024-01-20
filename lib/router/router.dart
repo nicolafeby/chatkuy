@@ -1,4 +1,5 @@
 import 'package:chatkuy/helper/helper.dart';
+import 'package:chatkuy/presentation/chat/chat_page.dart';
 import 'package:chatkuy/presentation/home/home_page.dart';
 import 'package:chatkuy/presentation/login/login_page.dart';
 import 'package:chatkuy/presentation/profile/profile_page.dart';
@@ -25,6 +26,8 @@ class Router {
         return const HomePage();
       case RouterConstant.profilePage:
         return ProfilePage(argument: settings.arguments as ProfileArgument);
+      case RouterConstant.chatPage:
+        return ChatPage(argument: settings.arguments as ChatArgument);
       default:
         return const SplashScreenPage();
     }
