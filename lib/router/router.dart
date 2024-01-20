@@ -1,3 +1,4 @@
+import 'package:chatkuy/presentation/home/home_page.dart';
 import 'package:chatkuy/presentation/login/login_page.dart';
 import 'package:chatkuy/presentation/register/register_page.dart';
 import 'package:chatkuy/router/router_constant.dart';
@@ -17,6 +18,8 @@ class Router {
         return const LoginPage();
       case RouterConstant.registerPage:
         return const RegisterPage();
+      case RouterConstant.homePage:
+        return const HomePage();
       default:
         return const LoginPage();
     }

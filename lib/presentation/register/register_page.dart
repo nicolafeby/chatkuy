@@ -1,4 +1,7 @@
+import 'package:chatkuy/helper/helper.dart';
 import 'package:chatkuy/router/router_constant.dart';
+import 'package:chatkuy/service/auth_service.dart';
+import 'package:chatkuy/widgets/snackbar_widget.dart';
 import 'package:chatkuy/widgets/text_input_decoration.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +19,7 @@ class _RegisterPageState extends State<RegisterPage> {
   String email = "";
   String password = "";
   String fullName = "";
-  // AuthService authService = AuthService();
+  AuthService authService = AuthService();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -35,7 +38,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: <Widget>[
                         const Text(
-                          "Groupie",
+                          "ChatKuy",
                           style: TextStyle(
                               fontSize: 40, fontWeight: FontWeight.bold),
                         ),
@@ -46,6 +49,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                 fontSize: 15, fontWeight: FontWeight.w400)),
                         Image.asset("assets/images/register.png"),
                         TextFormField(
+                          textInputAction: TextInputAction.next,
                           decoration: textInputDecoration.copyWith(
                               labelText: "Full Name",
                               prefixIcon: Icon(
@@ -69,6 +73,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           height: 15,
                         ),
                         TextFormField(
+                          textInputAction: TextInputAction.next,
                           decoration: textInputDecoration.copyWith(
                               labelText: "Email",
                               prefixIcon: Icon(
@@ -92,6 +97,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         ),
                         const SizedBox(height: 15),
                         TextFormField(
+                          textInputAction: TextInputAction.next,
                           obscureText: true,
                           decoration: textInputDecoration.copyWith(
                               labelText: "Password",
@@ -167,22 +173,23 @@ class _RegisterPageState extends State<RegisterPage> {
       setState(() {
         _isLoading = true;
       });
-      // await authService
-      //     .registerUserWithEmailandPassword(fullName, email, password)
-      //     .then((value) async {
-      //   if (value == true) {
-      //     // saving the shared preference state
-      //     await HelperFunctions.saveUserLoggedInStatus(true);
-      //     await HelperFunctions.saveUserEmailSF(email);
-      //     await HelperFunctions.saveUserNameSF(fullName);
-      //     nextScreenReplace(context, const HomePage());
-      //   } else {
-      //     showSnackbar(context, Colors.red, value);
-      //     setState(() {
-      //       _isLoading = false;
-      //     });
-      //   }
-      // });
+      await authService
+          .registerWithEmainAndPassword(
+              email: email, fullName: fullName, password: password)
+          .then((value) async {
+        if (value == true) {
+          // saving the shared preference state
+          // await Helper.saveUserLoggedInStatus(true);
+          // await Helper.saveUserEmailSF(email);
+          // await Helper.saveUsernameSF(fullName);
+          // navigate;
+        } else {
+          showSnackbar(context, Colors.red, value);
+          setState(() {
+            _isLoading = false;
+          });
+        }
+      });
     }
   }
 }
