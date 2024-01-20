@@ -2,9 +2,6 @@ import 'package:chatkuy/helper/helper.dart';
 import 'package:chatkuy/service/database_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/material.dart';
-
 class AuthService {
   final FirebaseAuth auth = FirebaseAuth.instance;
 
@@ -13,25 +10,25 @@ class AuthService {
       required String email,
       required String password}) async {
     try {
-      User user = (await auth.createUserWithEmailAndPassword(
+      User? user = (await auth.createUserWithEmailAndPassword(
               email: email, password: password))
-          .user!;
+          .user;
 
       if (user != null) {
         await DatabaseService(uid: user.uid).saveUserData(fullName, email);
         return true;
       }
     } on FirebaseAuthException catch (e) {
-      return e.message;
+      return e.code;
     }
   }
 
   Future loginWithEmainAndPassword(
       {required String email, required String password}) async {
     try {
-      User user = (await auth.signInWithEmailAndPassword(
+      User? user = (await auth.signInWithEmailAndPassword(
               email: email, password: password))
-          .user!;
+          .user;
 
       if (user != null) return true;
     } on FirebaseAuthException catch (e) {
