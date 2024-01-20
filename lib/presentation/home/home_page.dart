@@ -1,5 +1,7 @@
 import 'package:chatkuy/helper/helper.dart';
 import 'package:chatkuy/presentation/login/login_page.dart';
+import 'package:chatkuy/presentation/profile/profile_page.dart';
+import 'package:chatkuy/router/router_constant.dart';
 import 'package:chatkuy/service/auth_service.dart';
 import 'package:chatkuy/service/database_service.dart';
 import 'package:chatkuy/widgets/snackbar_widget.dart';
@@ -14,7 +16,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  String userName = "";
+  String username = "";
   String email = "";
   AuthService authService = AuthService();
   Stream? groups;
@@ -44,7 +46,7 @@ class _HomePageState extends State<HomePage> {
     });
     await Helper.getUsernameFromSF().then((val) {
       setState(() {
-        userName = val!;
+        username = val!;
       });
     });
     // getting the list of snapshots in our stream
@@ -92,7 +94,7 @@ class _HomePageState extends State<HomePage> {
             height: 15,
           ),
           Text(
-            userName,
+            username,
             textAlign: TextAlign.center,
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
@@ -116,6 +118,11 @@ class _HomePageState extends State<HomePage> {
           ),
           ListTile(
             onTap: () {
+              Navigator.pushReplacementNamed(
+                context,
+                RouterConstant.profilePage,
+                arguments: ProfileArgument(email: email, username: username),
+              );
               // nextScreenReplace(
               //     context,
               //     ProfilePage(
