@@ -8,7 +8,7 @@ void showSnackbar(BuildContext context, Color color, String message) {
         style: const TextStyle(fontSize: 14.0),
       ),
       backgroundColor: color,
-      duration: const Duration(seconds: 2),
+      duration: const Duration(seconds: 3),
       action: SnackBarAction(
         label: 'Oke',
         onPressed: () {},

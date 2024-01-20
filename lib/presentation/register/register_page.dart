@@ -26,7 +26,8 @@ class _RegisterPageState extends State<RegisterPage> {
       body: _isLoading
           ? Center(
               child: CircularProgressIndicator(
-                  color: Theme.of(context).primaryColor))
+                  color: Theme.of(context).primaryColor),
+            )
           : SingleChildScrollView(
               child: Padding(
                 padding:
@@ -68,9 +69,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           }
                         },
                       ),
-                      const SizedBox(
-                        height: 15,
-                      ),
+                      const SizedBox(height: 15),
                       TextFormField(
                         textInputAction: TextInputAction.next,
                         decoration: textInputDecoration.copyWith(
@@ -116,9 +115,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           });
                         },
                       ),
-                      const SizedBox(
-                        height: 20,
-                      ),
+                      const SizedBox(height: 20),
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
@@ -127,18 +124,14 @@ class _RegisterPageState extends State<RegisterPage> {
                               elevation: 0,
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(30))),
+                          onPressed: register,
                           child: const Text(
                             "Register",
                             style: TextStyle(color: Colors.white, fontSize: 16),
                           ),
-                          onPressed: () {
-                            register();
-                          },
                         ),
                       ),
-                      const SizedBox(
-                        height: 10,
-                      ),
+                      const SizedBox(height: 10),
                       Text.rich(
                         TextSpan(
                           text: "Already have an account? ",
@@ -169,7 +162,8 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  register() async {
+  void register() async {
+    var navigator = Navigator.of(context);
     if (formKey.currentState!.validate()) {
       setState(() {
         _isLoading = true;
@@ -180,10 +174,10 @@ class _RegisterPageState extends State<RegisterPage> {
           .then((value) async {
         if (value == true) {
           // saving the shared preference state
-          // await Helper.saveUserLoggedInStatus(true);
-          // await Helper.saveUserEmailSF(email);
-          // await Helper.saveUsernameSF(fullName);
-          // navigate;
+          await Helper.saveUserLoggedInStatus(true);
+          await Helper.saveUserEmailSF(email);
+          await Helper.saveUsernameSF(fullName);
+          navigator.pushReplacementNamed(RouterConstant.homePage);
         } else {
           showSnackbar(context, Colors.red, value);
           setState(() {

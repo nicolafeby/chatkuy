@@ -1,8 +1,9 @@
 import 'package:chatkuy/helper/helper.dart';
-import 'package:chatkuy/presentation/home/home_page.dart';
-import 'package:chatkuy/presentation/register/register_page.dart';
 import 'package:chatkuy/router/router_constant.dart';
+import 'package:chatkuy/service/auth_service.dart';
+import 'package:chatkuy/service/database_service.dart';
 import 'package:chatkuy/widgets/custom_button_widget.dart';
+import 'package:chatkuy/widgets/snackbar_widget.dart';
 import 'package:chatkuy/widgets/text_input_decoration.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -21,7 +22,7 @@ class _LoginPageState extends State<LoginPage> {
   String email = "";
   String password = "";
   bool _isLoading = false;
-  // AuthService authService = AuthService();
+  AuthService authService = AuthService();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -127,29 +128,30 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   login() async {
+    final navigator = Navigator.of(context);
     if (formKey.currentState!.validate()) {
       setState(() {
         _isLoading = true;
       });
-      //   await authService
-      //       .loginWithUserNameandPassword(email, password)
-      //       .then((value) async {
-      //     if (value == true) {
-      //       // QuerySnapshot snapshot =
-      //           // await DatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
-      //           //     .gettingUserData(email);
-      //       // saving the values to our shared preferences
-      //       // await Helper.saveUserLoggedInStatus(true);
-      //       // await Helper.saveUserEmailSF(email);
-      //       // await Helper.saveUserNameSF(snapshot.docs[0]['fullName']);
-      //       // nextScreenReplace(context, const HomePage());
-      //     } else {
-      //       // showSnackbar(context, Colors.red, value);
-      //       setState(() {
-      //         _isLoading = false;
-      //       });
-      //     }
-      //   });
+      await authService
+          .loginWithEmainAndPassword(email: email, password: password)
+          .then((value) async {
+        if (value == true) {
+          QuerySnapshot snapshot =
+              await DatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
+                  .gettingUserData(email);
+          // saving the values to our shared preferences
+          await Helper.saveUserLoggedInStatus(true);
+          await Helper.saveUserEmailSF(email);
+          await Helper.saveUsernameSF(snapshot.docs[0]['fullName']);
+          navigator.pushReplacementNamed(RouterConstant.homePage);
+        } else {
+          showSnackbar(context, Colors.red, value);
+          setState(() {
+            _isLoading = false;
+          });
+        }
+      });
     }
   }
 }
