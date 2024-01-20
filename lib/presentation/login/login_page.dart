@@ -1,3 +1,4 @@
+import 'package:chatkuy/constants/app_constant.dart';
 import 'package:chatkuy/helper/helper.dart';
 import 'package:chatkuy/router/router_constant.dart';
 import 'package:chatkuy/service/auth_service.dart';
@@ -9,6 +10,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -18,6 +20,11 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
   final formKey = GlobalKey<FormState>();
   String email = "";
   String password = "";
@@ -100,7 +107,7 @@ class _LoginPageState extends State<LoginPage> {
                           text: 'Sign In',
                           onPressed: () => login(),
                         ),
-                        const SizedBox(height: 10),
+                        SizedBox(height: 24.h),
                         Text.rich(TextSpan(
                           text: "Don't have an account? ",
                           style: const TextStyle(
@@ -109,8 +116,8 @@ class _LoginPageState extends State<LoginPage> {
                             TextSpan(
                                 text: "Register here",
                                 style: const TextStyle(
-                                    color: Colors.black,
-                                    decoration: TextDecoration.underline),
+                                  color: AppColor.primaryColor,
+                                ),
                                 recognizer: TapGestureRecognizer()
                                   ..onTap = () {
                                     Navigator.pushReplacementNamed(

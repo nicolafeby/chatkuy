@@ -2,10 +2,14 @@ import 'dart:developer';
 
 import 'package:chatkuy/helper/helper.dart';
 import 'package:chatkuy/constants/app_constant.dart';
+import 'package:chatkuy/presentation/home/home_page.dart';
+import 'package:chatkuy/presentation/login/login_page.dart';
+import 'package:chatkuy/router/router_constant.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:chatkuy/router/router.dart' as router;
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -32,34 +36,27 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  bool _isSignIn = false;
   @override
   void initState() {
     super.initState();
-    getUserLiggedInStatus();
-  }
-
-  getUserLiggedInStatus() async {
-    await Helper.getUserLoggedInStatus().then((value) {
-      if (value != null) {
-        _isSignIn = value;
-      }
-    });
   }
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    Helper.getUserLoggedInStatus().then((value) => log(value.toString()));
-    return MaterialApp(
-      title: 'Flutter Demo',
-      onGenerateRoute: router.Router().generateAppRoutes,
-      theme: ThemeData(
-        primaryColor: AppColor.primaryColor,
-        scaffoldBackgroundColor: Colors.white,
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
+    return ScreenUtilInit(
+      builder: (context, child) {
+        return MaterialApp(
+          title: 'Flutter Demo',
+          onGenerateRoute: router.Router().generateAppRoutes,
+          theme: ThemeData(
+            primaryColor: AppColor.primaryColor,
+            scaffoldBackgroundColor: Colors.white,
+            colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+            useMaterial3: true,
+          ),
+        );
+      },
     );
   }
 }

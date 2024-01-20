@@ -1,3 +1,4 @@
+import 'package:chatkuy/constants/app_constant.dart';
 import 'package:chatkuy/helper/helper.dart';
 import 'package:chatkuy/router/router_constant.dart';
 import 'package:chatkuy/service/auth_service.dart';
@@ -5,6 +6,7 @@ import 'package:chatkuy/widgets/snackbar_widget.dart';
 import 'package:chatkuy/widgets/text_input_decoration.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({Key? key}) : super(key: key);
@@ -131,7 +133,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           ),
                         ),
                       ),
-                      const SizedBox(height: 10),
+                    SizedBox(height: 24.h),
                       Text.rich(
                         TextSpan(
                           text: "Already have an account? ",
@@ -141,8 +143,8 @@ class _RegisterPageState extends State<RegisterPage> {
                             TextSpan(
                               text: "Login now",
                               style: const TextStyle(
-                                  color: Colors.black,
-                                  decoration: TextDecoration.underline),
+                                color: AppColor.primaryColor,
+                              ),
                               recognizer: TapGestureRecognizer()
                                 ..onTap = () {
                                   Navigator.pushReplacementNamed(
