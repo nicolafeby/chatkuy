@@ -2,6 +2,7 @@ import 'package:chatkuy/helper/helper.dart';
 import 'package:chatkuy/presentation/home/home_page.dart';
 import 'package:chatkuy/presentation/register/register_page.dart';
 import 'package:chatkuy/router/router_constant.dart';
+import 'package:chatkuy/widgets/custom_button_widget.dart';
 import 'package:chatkuy/widgets/text_input_decoration.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -93,30 +94,12 @@ class _LoginPageState extends State<LoginPage> {
                             });
                           },
                         ),
-                        const SizedBox(
-                          height: 20,
+                        const SizedBox(height: 20),
+                        CustomButtonWidget(
+                          text: 'Sign In',
+                          onPressed: () => login(),
                         ),
-                        SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                                backgroundColor: Theme.of(context).primaryColor,
-                                elevation: 0,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(30))),
-                            child: const Text(
-                              "Sign In",
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 16),
-                            ),
-                            onPressed: () {
-                              login();
-                            },
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
+                        const SizedBox(height: 10),
                         Text.rich(TextSpan(
                           text: "Don't have an account? ",
                           style: const TextStyle(
@@ -129,7 +112,7 @@ class _LoginPageState extends State<LoginPage> {
                                     decoration: TextDecoration.underline),
                                 recognizer: TapGestureRecognizer()
                                   ..onTap = () {
-                                    Navigator.pushNamed(
+                                    Navigator.pushReplacementNamed(
                                       context,
                                       RouterConstant.registerPage,
                                     );
