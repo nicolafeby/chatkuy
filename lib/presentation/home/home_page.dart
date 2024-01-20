@@ -4,6 +4,7 @@ import 'package:chatkuy/presentation/profile/profile_page.dart';
 import 'package:chatkuy/router/router_constant.dart';
 import 'package:chatkuy/service/auth_service.dart';
 import 'package:chatkuy/service/database_service.dart';
+import 'package:chatkuy/widgets/custom_group_tile_widget.dart';
 import 'package:chatkuy/widgets/snackbar_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -50,13 +51,13 @@ class _HomePageState extends State<HomePage> {
       });
     });
     // getting the list of snapshots in our stream
-    // await DatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
-    //     .getUserGroups()
-    //     .then((snapshot) {
-    //   setState(() {
-    //     groups = snapshot;
-    //   });
-    // });
+    await DatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
+        .getUserGroups()
+        .then((snapshot) {
+      setState(() {
+        groups = snapshot;
+      });
+    });
   }
 
   @override
@@ -76,7 +77,7 @@ class _HomePageState extends State<HomePage> {
         centerTitle: true,
         backgroundColor: Theme.of(context).primaryColor,
         title: const Text(
-          "Groups",
+          "Chat",
           style: TextStyle(
               color: Colors.white, fontWeight: FontWeight.bold, fontSize: 27),
         ),
@@ -112,7 +113,7 @@ class _HomePageState extends State<HomePage> {
                 const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
             leading: const Icon(Icons.group),
             title: const Text(
-              "Groups",
+              "Chat",
               style: TextStyle(color: Colors.black),
             ),
           ),
@@ -123,12 +124,6 @@ class _HomePageState extends State<HomePage> {
                 RouterConstant.profilePage,
                 arguments: ProfileArgument(email: email, username: username),
               );
-              // nextScreenReplace(
-              //     context,
-              //     ProfilePage(
-              //       userName: userName,
-              //       email: email,
-              //     ));
             },
             contentPadding:
                 const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
@@ -286,25 +281,24 @@ class _HomePageState extends State<HomePage> {
       builder: (context, AsyncSnapshot snapshot) {
         // make some checks
         if (snapshot.hasData) {
-          return Container();
-          // if (snapshot.data['groups'] != null) {
-          //   if (snapshot.data['groups'].length != 0) {
-          //     return ListView.builder(
-          //       itemCount: snapshot.data['groups'].length,
-          //       itemBuilder: (context, index) {
-          //         int reverseIndex = snapshot.data['groups'].length - index - 1;
-          //         return GroupTile(
-          //             groupId: getId(snapshot.data['groups'][reverseIndex]),
-          //             groupName: getName(snapshot.data['groups'][reverseIndex]),
-          //             userName: snapshot.data['fullName']);
-          //       },
-          //     );
-          //   } else {
-          //     return noGroupWidget();
-          //   }
-          // } else {
-          //   return noGroupWidget();
-          // }
+          if (snapshot.data['groups'] != null) {
+            if (snapshot.data['groups'].length != 0) {
+              return ListView.builder(
+                itemCount: snapshot.data['groups'].length,
+                itemBuilder: (context, index) {
+                  int reverseIndex = snapshot.data['groups'].length - index - 1;
+                  return GroupTile(
+                      groupId: getId(snapshot.data['groups'][reverseIndex]),
+                      groupName: getName(snapshot.data['groups'][reverseIndex]),
+                      userName: snapshot.data['fullName']);
+                },
+              );
+            } else {
+              return noGroupWidget();
+            }
+          } else {
+            return noGroupWidget();
+          }
         } else {
           return Center(
             child: CircularProgressIndicator(
