@@ -6,6 +6,7 @@ import 'package:chatkuy/shared/app_constant.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:chatkuy/router/router.dart' as router;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -52,13 +53,13 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
+      onGenerateRoute: router.Router().generateAppRoutes,
       theme: ThemeData(
         primaryColor: AppColor.primaryColor,
         scaffoldBackgroundColor: Colors.white,
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: _isSignIn ? const HomePage() : const LoginPage(),
     );
   }
 }
