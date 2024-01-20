@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:chatkuy/constants/app_constant.dart';
 import 'package:chatkuy/helper/helper.dart';
 import 'package:chatkuy/router/router_constant.dart';
 import 'package:flutter/material.dart';

@@ -1,3 +1,5 @@
+import 'package:chatkuy/presentation/group_info/group_info_page.dart';
+import 'package:chatkuy/router/router_constant.dart';
 import 'package:chatkuy/service/database_service.dart';
 import 'package:chatkuy/widgets/message_tile.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -60,13 +62,15 @@ class _ChatPageState extends State<ChatPage> {
         actions: [
           IconButton(
               onPressed: () {
-                // nextScreen(
-                //     context,
-                //     GroupInfo(
-                //       groupId: widget.groupId,
-                //       groupName: widget.groupName,
-                //       adminName: admin,
-                //     ));
+                Navigator.pushNamed(
+                  context,
+                  RouterConstant.groupInfoPage,
+                  arguments: GroupInfoArgument(
+                    adminName: admin,
+                    groupId: widget.argument.groupId,
+                    groupName: widget.argument.groupName,
+                  ),
+                );
               },
               icon: const Icon(Icons.info))
         ],

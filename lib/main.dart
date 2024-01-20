@@ -1,10 +1,4 @@
-import 'dart:developer';
-
-import 'package:chatkuy/helper/helper.dart';
 import 'package:chatkuy/constants/app_constant.dart';
-import 'package:chatkuy/presentation/home/home_page.dart';
-import 'package:chatkuy/presentation/login/login_page.dart';
-import 'package:chatkuy/router/router_constant.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
