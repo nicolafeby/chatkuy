@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 
 class DatabaseService {
   final String? uid;
@@ -27,5 +28,32 @@ class DatabaseService {
 
   getUserGroups() async {
     return userCollection.doc(uid).snapshots();
+  }
+
+  Future createGroup({
+    required String username,
+    required String id,
+    required String groupName,
+  }) async {
+    DocumentReference groupDocumentReference = await groupCollection.add({
+      'groupName': groupName,
+      'groupIcon': '',
+      'admin': '${id}_$username',
+      'members': [],
+      'groupId': '',
+      'recentMessage': '',
+      'recentMessageSender': '',
+    });
+
+    await groupDocumentReference.update({
+      'members': FieldValue.arrayUnion(['${id}_$username']),
+      'groupId': groupDocumentReference.id,
+    });
+
+    DocumentReference userDocumentReference = userCollection.doc(uid);
+    return await userDocumentReference.update({
+      'groups':
+          FieldValue.arrayUnion(['${groupDocumentReference.id}_$groupName']),
+    });
   }
 }
