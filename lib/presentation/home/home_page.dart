@@ -66,9 +66,8 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         actions: [
           IconButton(
-              onPressed: () {
-                // nextScreen(context, const SearchPage());
-              },
+              onPressed: () =>
+                  Navigator.pushNamed(context, RouterConstant.searchPage),
               icon: const Icon(
                 Icons.search,
               ))

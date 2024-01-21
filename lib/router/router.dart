@@ -4,6 +4,7 @@ import 'package:chatkuy/presentation/home/home_page.dart';
 import 'package:chatkuy/presentation/login/login_page.dart';
 import 'package:chatkuy/presentation/profile/profile_page.dart';
 import 'package:chatkuy/presentation/register/register_page.dart';
+import 'package:chatkuy/presentation/search/search_page.dart';
 import 'package:chatkuy/presentation/splash/splash_screen.dart';
 import 'package:chatkuy/router/router_constant.dart';
 import 'package:flutter/material.dart';
@@ -30,6 +31,8 @@ class Router {
         return ChatPage(argument: settings.arguments as ChatArgument);
       case RouterConstant.groupInfoPage:
         return GroupInfo(argument: settings.arguments as GroupInfoArgument);
+      case RouterConstant.searchPage:
+        return const SearchPage();
       default:
         return const SplashScreenPage();
     }
