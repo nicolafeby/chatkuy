@@ -1,4 +1,6 @@
 import 'package:chatkuy/constants/app_constant.dart';
+import 'package:chatkuy/firebase_options.dart';
+import 'package:chatkuy/service/notification_service.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -17,8 +19,11 @@ void main() async {
       ),
     );
   } else {
-    await Firebase.initializeApp();
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
   }
+  await NotificationService().initNotification();
   runApp(const MyApp());
 }
 
