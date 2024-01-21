@@ -101,9 +101,7 @@ class _ChatPageState extends State<ChatPage> {
                   width: 12,
                 ),
                 GestureDetector(
-                  onTap: () {
-                    // sendMessage();
-                  },
+                  onTap: sendMessage,
                   child: Container(
                     height: 50,
                     width: 50,
@@ -146,18 +144,19 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
-  // sendMessage() {
-  //   if (messageController.text.isNotEmpty) {
-  //     Map<String, dynamic> chatMessageMap = {
-  //       "message": messageController.text,
-  //       "sender": widget.argument.userName,
-  //       "time": DateTime.now().millisecondsSinceEpoch,
-  //     };
+  sendMessage() {
+    if (messageController.text.isNotEmpty) {
+      Map<String, dynamic> chatMessageMap = {
+        "message": messageController.text,
+        "sender": widget.argument.userName,
+        "time": DateTime.now().millisecondsSinceEpoch,
+      };
 
-  //     DatabaseService().sendMessage(widget.argument.groupId, chatMessageMap);
-  //     setState(() {
-  //       messageController.clear();
-  //     });
-  //   }
-  // }
+      DatabaseService().sendMessage(
+          chatMessagesData: chatMessageMap, groupId: widget.argument.groupId);
+      setState(() {
+        messageController.clear();
+      });
+    }
+  }
 }
