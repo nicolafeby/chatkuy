@@ -158,7 +158,7 @@ class _ChatPageState extends State<ChatPage> {
 
   void isActive() {
     if (_focusNode.hasFocus) {
-      gapHeight = 78;
+      gapHeight = 84;
       setState(() {
         if (messageController.text.isNotEmpty) {
           Timer(
