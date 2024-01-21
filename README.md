@@ -1,6 +1,6 @@
-# chatkuy
+# Chatkuy
 
-A new Flutter project.
+ChatKuy adalah aplikasi chating, aplikasi ini masih dalam proses development.
 
 ## Getting Started
 
