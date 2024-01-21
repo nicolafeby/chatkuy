@@ -42,6 +42,7 @@ class _MyAppState extends State<MyApp> {
       builder: (context, child) {
         return MaterialApp(
           title: 'Flutter Demo',
+          debugShowCheckedModeBanner: false,
           onGenerateRoute: router.Router().generateAppRoutes,
           theme: ThemeData(
             primaryColor: AppColor.primaryColor,
