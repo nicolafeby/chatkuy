@@ -1,3 +1,4 @@
+import 'package:chatkuy/router/router_constant.dart';
 import 'package:chatkuy/service/database_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -82,16 +83,18 @@ class _GroupInfoState extends State<GroupInfo> {
                           ),
                           IconButton(
                             onPressed: () async {
-                              // DatabaseService(
-                              //         uid: FirebaseAuth
-                              //             .instance.currentUser!.uid)
-                              //     .toggleGroupJoin(
-                              //         widget.groupId,
-                              //         getName(widget.adminName),
-                              //         widget.groupName)
-                              //     .whenComplete(() {
-                              //   nextScreenReplace(context, const HomePage());
-                              // });
+                              DatabaseService(
+                                      uid: FirebaseAuth
+                                          .instance.currentUser!.uid)
+                                  .toggleGroupJoin(
+                                groupId: widget.argument.groupId,
+                                groupName: widget.argument.groupName,
+                                username: getName(widget.argument.adminName),
+                              )
+                                  .whenComplete(() {
+                                Navigator.pushReplacementNamed(
+                                    context, RouterConstant.homePage);
+                              });
                             },
                             icon: const Icon(
                               Icons.done,
