@@ -1,4 +1,4 @@
-import 'package:chatkuy/presentation/chat/chat_page.dart';
+import 'package:chatkuy/presentation/chat/page/chat_page.dart';
 import 'package:chatkuy/presentation/group_info/group_info_page.dart';
 import 'package:chatkuy/presentation/home/home_page.dart';
 import 'package:chatkuy/presentation/login/login_page.dart';

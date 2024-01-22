@@ -1,4 +1,4 @@
-import 'package:chatkuy/presentation/chat/chat_page.dart';
+import 'package:chatkuy/presentation/chat/page/chat_page.dart';
 import 'package:chatkuy/router/router_constant.dart';
 import 'package:flutter/material.dart';
 
