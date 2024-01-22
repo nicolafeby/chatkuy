@@ -29,7 +29,7 @@ class _SearchPageState extends State<SearchPage> {
     getCurrentUserIdAndName();
   }
 
-  getCurrentUserIdAndName() async {
+  void getCurrentUserIdAndName() async {
     await Helper.getUsernameFromSF().then((value) {
       setState(() {
         userName = value!;
@@ -100,13 +100,13 @@ class _SearchPageState extends State<SearchPage> {
                   child: CircularProgressIndicator(
                       color: Theme.of(context).primaryColor),
                 )
-              : groupList(),
+              : _buildGroupList(),
         ],
       ),
     );
   }
 
-  initiateSearchMethod() async {
+  void initiateSearchMethod() async {
     if (searchController.text.isNotEmpty) {
       setState(() {
         isLoading = true;
@@ -123,7 +123,7 @@ class _SearchPageState extends State<SearchPage> {
     }
   }
 
-  groupList() {
+  Widget _buildGroupList() {
     return hasUserSearched
         ? ListView.builder(
             shrinkWrap: true,
@@ -140,7 +140,7 @@ class _SearchPageState extends State<SearchPage> {
         : Container();
   }
 
-  joinedOrNot(
+  void joinedOrNot(
       String userName, String groupId, String groupname, String admin) async {
     await DatabaseService(uid: user!.uid)
         .isUserJoined(

@@ -16,9 +16,9 @@ jobs:
         with:
           java-version: "12.x"
       - uses: subosito/flutter-action@v1
-      - name: "Run flutter pub get"
+      - name: "Run Pub Get"
         run: flutter pub get
-      - name: Run flutter test
+      - name: Run Flutter Test
         run: flutter test
       - name: "Build Web App"
         run: flutter build web
