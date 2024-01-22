@@ -22,6 +22,7 @@ class _RegisterPageState extends State<RegisterPage> {
   String password = "";
   String fullName = "";
   AuthService authService = AuthService();
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -46,9 +47,11 @@ class _RegisterPageState extends State<RegisterPage> {
                             fontSize: 40, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      const Text("Create your account now to chat and explore",
-                          style: TextStyle(
-                              fontSize: 15, fontWeight: FontWeight.w400)),
+                      const Text(
+                        "Create your account now to chat and explore",
+                        style: TextStyle(
+                            fontSize: 15, fontWeight: FontWeight.w400),
+                      ),
                       Image.asset("assets/images/register.png"),
                       TextFormField(
                         textInputAction: TextInputAction.next,
@@ -88,8 +91,8 @@ class _RegisterPageState extends State<RegisterPage> {
                         },
                         validator: (val) {
                           return RegExp(
-                                      r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
-                                  .hasMatch(val!)
+                            r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+",
+                          ).hasMatch(val!)
                               ? null
                               : "Please enter a valid email";
                         },
@@ -133,7 +136,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           ),
                         ),
                       ),
-                    SizedBox(height: 24.h),
+                      SizedBox(height: 24.h),
                       Text.rich(
                         TextSpan(
                           text: "Already have an account? ",
@@ -163,6 +166,8 @@ class _RegisterPageState extends State<RegisterPage> {
             ),
     );
   }
+
+  
 
   void register() async {
     var navigator = Navigator.of(context);

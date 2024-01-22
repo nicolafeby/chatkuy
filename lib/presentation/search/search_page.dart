@@ -1,5 +1,5 @@
 import 'package:chatkuy/helper/helper.dart';
-import 'package:chatkuy/presentation/chat/chat_page.dart';
+import 'package:chatkuy/presentation/chat/page/chat_page.dart';
 import 'package:chatkuy/router/router_constant.dart';
 import 'package:chatkuy/service/database_service.dart';
 import 'package:chatkuy/widgets/snackbar_widget.dart';

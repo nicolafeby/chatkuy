@@ -15,7 +15,7 @@ class NotificationService {
       badge: true,
       carPlay: false,
       criticalAlert: false,
-      provisional: false,
+      provisional: true,
       sound: true,
     );
     final fcmToken = await _firebaseMessaging.getToken();
@@ -55,3 +55,4 @@ Future initPushNotifications() async {
   FirebaseMessaging.onMessageOpenedApp.listen(handleMessage);
   FirebaseMessaging.onBackgroundMessage(_handleBackgroundMessage);
 }
+
