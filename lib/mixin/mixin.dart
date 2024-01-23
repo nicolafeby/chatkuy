@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 
 mixin AppMixin {
   void showSnackbar(BuildContext context, Color color, String message) {
@@ -16,6 +17,38 @@ mixin AppMixin {
           textColor: Colors.white,
         ),
       ),
+    );
+  }
+
+  void showExitGroupConfirmation(BuildContext context,
+      {required Function()? onPressed}) {
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Exit"),
+          content: const Text("Are you sure you exit the group? "),
+          actions: [
+            IconButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              icon: const Icon(
+                Icons.cancel,
+                color: Colors.red,
+              ),
+            ),
+            IconButton(
+              onPressed: onPressed,
+              icon: const Icon(
+                Icons.done,
+                color: Colors.green,
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }
