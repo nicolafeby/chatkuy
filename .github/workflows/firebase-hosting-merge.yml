@@ -20,8 +20,6 @@ jobs:
         run: flutter clean
       - name: "Run Pub Get"
         run: flutter pub get
-      - name: Run flutter build_runner
-        run: flutter pub run build_runner build --delete-conflicting-outputs
       - name: Run Flutter Test
         run: flutter test
       - name: "Build Web App"
