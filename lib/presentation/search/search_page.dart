@@ -129,7 +129,7 @@ class _SearchPageState extends State<SearchPage> {
             shrinkWrap: true,
             itemCount: searchSnapshot!.docs.length,
             itemBuilder: (context, index) {
-              return groupTile(
+              return _buildGroupTile(
                 userName,
                 searchSnapshot!.docs[index]['groupId'],
                 searchSnapshot!.docs[index]['groupName'],
@@ -155,7 +155,7 @@ class _SearchPageState extends State<SearchPage> {
     });
   }
 
-  Widget groupTile(
+  Widget _buildGroupTile(
       String userName, String groupId, String groupName, String admin) {
     // function to check whether user already exists in group
     joinedOrNot(userName, groupId, groupName, admin);
