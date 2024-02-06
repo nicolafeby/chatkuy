@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:chatkuy/presentation/profile/profile_page.dart';
 import 'package:chatkuy/router/router_constant.dart';
 import 'package:chatkuy/service/auth_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class HomeDrawerWidget extends StatelessWidget {
   final String username;
@@ -12,34 +15,29 @@ class HomeDrawerWidget extends StatelessWidget {
     super.key,
     required this.username,
     required this.email,
-    required this.authService, required this.profileImage,
+    required this.authService,
+    required this.profileImage,
   });
 
   @override
   Widget build(BuildContext context) {
+    final image = File(profileImage);
     return Drawer(
       child: ListView(
         padding: const EdgeInsets.symmetric(vertical: 50),
         children: <Widget>[
-          Icon(
-            Icons.account_circle,
-            size: 150,
-            color: Colors.grey[700],
+          Image.file(
+            image,
+            fit: BoxFit.fill,
           ),
-          const SizedBox(
-            height: 15,
-          ),
+          SizedBox(height: 15.h),
           Text(
             username,
             textAlign: TextAlign.center,
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
-          const SizedBox(
-            height: 30,
-          ),
-          const Divider(
-            height: 2,
-          ),
+          SizedBox(height: 30.h),
+          Divider(height: 2.h),
           ListTile(
             onTap: () {},
             selectedColor: Theme.of(context).primaryColor,
@@ -57,7 +55,10 @@ class HomeDrawerWidget extends StatelessWidget {
               Navigator.pushReplacementNamed(
                 context,
                 RouterConstant.profilePage,
-                arguments: ProfileArgument(email: email, username: username),
+                arguments: ProfileArgument(
+                    email: email,
+                    username: username,
+                    imageProfile: profileImage),
               );
             },
             contentPadding:
