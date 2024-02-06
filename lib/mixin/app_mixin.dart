@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 
 mixin AppMixin {
   void showSnackbar(BuildContext context, Color color, String message) {
@@ -20,8 +19,10 @@ mixin AppMixin {
     );
   }
 
-  void showExitGroupConfirmation(BuildContext context,
-      {required Function()? onPressed}) {
+  void showExitGroupConfirmation(
+    BuildContext context, {
+    required Function()? onPressed,
+  }) {
     showDialog(
       barrierDismissible: false,
       context: context,

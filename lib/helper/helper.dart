@@ -8,6 +8,7 @@ class Helper {
   static String userLoggedInKey = 'LOGGEDINKEY';
   static String userNameKey = 'USERNAMEKEY';
   static String userEmailKey = 'USEREMAILKEY';
+  static String userProfilePicture = 'USERPROFILEPICTURE';
 
   static Future<bool> saveUserLoggedInStatus(bool isLogin) async {
     SharedPreferences sf = await SharedPreferences.getInstance();
@@ -24,6 +25,11 @@ class Helper {
     return await sf.setString(userEmailKey, email);
   }
 
+  static Future<bool> saveProfilePictureSF(String profilePicture) async {
+    SharedPreferences sf = await SharedPreferences.getInstance();
+    return await sf.setString(userProfilePicture, profilePicture);
+  }
+
   static Future<bool?> getUserLoggedInStatus() async {
     SharedPreferences sf = await SharedPreferences.getInstance();
     return sf.getBool(userLoggedInKey);
@@ -37,6 +43,11 @@ class Helper {
   static Future<String?> getUsernameFromSF() async {
     SharedPreferences sf = await SharedPreferences.getInstance();
     return sf.getString(userNameKey);
+  }
+
+  static Future<String?> getProfilePictureFromSF() async {
+    SharedPreferences sf = await SharedPreferences.getInstance();
+    return sf.getString(userProfilePicture);
   }
 
   static Future<bool> onWillPop(BuildContext context) {

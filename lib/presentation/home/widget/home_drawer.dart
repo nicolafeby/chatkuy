@@ -1,20 +1,18 @@
-import 'package:chatkuy/presentation/login/login_page.dart';
 import 'package:chatkuy/presentation/profile/profile_page.dart';
 import 'package:chatkuy/router/router_constant.dart';
 import 'package:chatkuy/service/auth_service.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 
 class HomeDrawerWidget extends StatelessWidget {
   final String username;
   final String email;
   final AuthService authService;
+  final String profileImage;
   const HomeDrawerWidget({
     super.key,
     required this.username,
     required this.email,
-    required this.authService,
+    required this.authService, required this.profileImage,
   });
 
   @override
@@ -93,10 +91,8 @@ class HomeDrawerWidget extends StatelessWidget {
                           onPressed: () async {
                             final navigator = Navigator.of(context);
                             await authService.signOut();
-                            navigator.pushAndRemoveUntil(
-                                MaterialPageRoute(
-                                    builder: (context) => const LoginPage()),
-                                (route) => false);
+                            navigator.pushNamedAndRemoveUntil(
+                                RouterConstant.loginPage, (route) => false);
                           },
                           icon: const Icon(
                             Icons.done,

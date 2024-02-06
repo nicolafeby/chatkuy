@@ -18,11 +18,12 @@ class RegisterPage extends StatefulWidget {
 class _RegisterPageState extends State<RegisterPage> {
   bool _isLoading = false;
   final formKey = GlobalKey<FormState>();
-  String email = "";
-  String password = "";
-  String fullName = "";
+  String email = '';
+  String password = '';
+  String fullName = '';
+  String profilePicture = '';
   AuthService authService = AuthService();
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -52,7 +53,10 @@ class _RegisterPageState extends State<RegisterPage> {
                         style: TextStyle(
                             fontSize: 15, fontWeight: FontWeight.w400),
                       ),
-                      Image.asset("assets/images/register.png"),
+                      // Image.asset("assets/images/register.png"),
+                      SizedBox(height: 24.h),
+                      _buildAddProfileImage(),
+                      SizedBox(height: 24.h),
                       TextFormField(
                         textInputAction: TextInputAction.next,
                         decoration: textInputDecoration.copyWith(
@@ -167,8 +171,6 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  
-
   void register() async {
     var navigator = Navigator.of(context);
     if (formKey.currentState!.validate()) {
@@ -177,13 +179,18 @@ class _RegisterPageState extends State<RegisterPage> {
       });
       await authService
           .registerWithEmainAndPassword(
-              email: email, fullName: fullName, password: password)
+        email: email,
+        fullName: fullName,
+        password: password,
+        profilePicture: profilePicture,
+      )
           .then((value) async {
         if (value == true) {
           // saving the shared preference state
           await Helper.saveUserLoggedInStatus(true);
           await Helper.saveUserEmailSF(email);
           await Helper.saveUsernameSF(fullName);
+          await Helper.saveProfilePictureSF(profilePicture);
           navigator.pushReplacementNamed(RouterConstant.homePage);
         } else {
           showSnackbar(context, Colors.red, value);
@@ -193,5 +200,24 @@ class _RegisterPageState extends State<RegisterPage> {
         }
       });
     }
+  }
+
+  Widget _buildAddProfileImage() {
+    return GestureDetector(
+      onTap: () {}, //=> _pickImage(),
+      child: Container(
+        height: 100.r,
+        width: 100.r,
+        decoration: BoxDecoration(
+          color: Colors.grey[700],
+          shape: BoxShape.circle,
+        ),
+        child: Icon(
+          Icons.camera_enhance,
+          color: Colors.white,
+          size: 24.r,
+        ),
+      ),
+    );
   }
 }

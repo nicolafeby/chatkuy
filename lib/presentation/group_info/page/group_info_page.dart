@@ -1,4 +1,4 @@
-import 'package:chatkuy/mixin/mixin.dart';
+import 'package:chatkuy/mixin/app_mixin.dart';
 import 'package:chatkuy/router/router_constant.dart';
 import 'package:chatkuy/service/database_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';

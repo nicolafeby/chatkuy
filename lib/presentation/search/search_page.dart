@@ -52,11 +52,7 @@ class _SearchPageState extends State<SearchPage> {
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Theme.of(context).primaryColor,
-        title: const Text(
-          "Search",
-          style: TextStyle(
-              fontSize: 27, fontWeight: FontWeight.bold, color: Colors.white),
-        ),
+        title: const Text("Search"),
       ),
       body: Column(
         children: [

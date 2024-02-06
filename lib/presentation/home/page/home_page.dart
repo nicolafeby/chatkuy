@@ -21,13 +21,14 @@ class _HomePageState extends State<HomePage> {
   String groupName = "";
   Stream? groups;
   String username = "";
+  String profileImage = '';
 
   bool _isLoading = false;
 
   @override
   void initState() {
     super.initState();
-    gettingUserData();
+    _gettingUserData();
   }
 
   // string manipulation
@@ -39,15 +40,20 @@ class _HomePageState extends State<HomePage> {
     return res.substring(res.indexOf("_") + 1);
   }
 
-  gettingUserData() async {
+  _gettingUserData() async {
     await Helper.getUserEmailFromSF().then((value) {
       setState(() {
         email = value!;
       });
     });
-    await Helper.getUsernameFromSF().then((val) {
+    await Helper.getUsernameFromSF().then((value) {
       setState(() {
-        username = val!;
+        username = value!;
+      });
+    });
+    await Helper.getProfilePictureFromSF().then((value) {
+      setState(() {
+        profileImage = value!;
       });
     });
     // getting the list of snapshots in our stream
@@ -60,7 +66,7 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  popUpDialog(BuildContext context) {
+  _showPopUpDialog(BuildContext context) {
     showDialog(
       barrierDismissible: false,
       context: context,
@@ -147,6 +153,7 @@ class _HomePageState extends State<HomePage> {
 
   Widget _buildDrawer() {
     return HomeDrawerWidget(
+      profileImage: profileImage,
       username: username,
       email: email,
       authService: authService,
@@ -197,7 +204,7 @@ class _HomePageState extends State<HomePage> {
         children: [
           GestureDetector(
             onTap: () {
-              popUpDialog(context);
+              _showPopUpDialog(context);
             },
             child: Icon(
               Icons.add_circle,
@@ -232,17 +239,13 @@ class _HomePageState extends State<HomePage> {
         elevation: 0,
         centerTitle: true,
         backgroundColor: Theme.of(context).primaryColor,
-        title: const Text(
-          "Chat",
-          style: TextStyle(
-              color: Colors.white, fontWeight: FontWeight.bold, fontSize: 27),
-        ),
+        title: const Text("Chat"),
       ),
       drawer: _buildDrawer(),
       body: _buildGroupList(),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          popUpDialog(context);
+          _showPopUpDialog(context);
         },
         elevation: 0,
         backgroundColor: Theme.of(context).primaryColor,
