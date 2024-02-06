@@ -23,6 +23,16 @@ class DatabaseService {
     });
   }
 
+  Future editUserData({
+    required String fullname,
+    required String profilePicture,
+  }) async {
+    return await userCollection.doc(uid).update({
+      'fullName': fullname,
+      'profilePic': profilePicture,
+    });
+  }
+
   Future gettingUserData(String email) async {
     QuerySnapshot snapshot =
         await userCollection.where('email', isEqualTo: email).get();

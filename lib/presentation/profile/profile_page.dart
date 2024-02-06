@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:chatkuy/presentation/edit_profile/edit_profile_page.dart';
 import 'package:chatkuy/router/router_constant.dart';
 import 'package:chatkuy/service/auth_service.dart';
@@ -7,10 +9,12 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 class ProfileArgument {
   final String username;
   final String email;
+  final String imageProfile;
 
   const ProfileArgument({
     required this.email,
     required this.username,
+    required this.imageProfile,
   });
 }
 
@@ -24,6 +28,14 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   AuthService authService = AuthService();
+  File? image;
+
+  @override
+  void initState() {
+    image = File(widget.argument.imageProfile);
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,6 +50,8 @@ class _ProfilePageState extends State<ProfilePage> {
               RouterConstant.editProfilePage,
               arguments: EditProfileArgument(
                 fullName: widget.argument.username,
+                email: widget.argument.email,
+                profileImage: widget.argument.imageProfile,
               ),
             ),
             child: const Padding(
@@ -140,10 +154,14 @@ class _ProfilePageState extends State<ProfilePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Icon(
-              Icons.account_circle,
-              size: 200,
-              color: Colors.grey[700],
+            ClipRRect(
+              borderRadius: BorderRadius.circular(500.h),
+              child: Image.file(
+                image!,
+                height: 150.r,
+                width: 150.r,
+                fit: BoxFit.cover,
+              ),
             ),
             SizedBox(height: 15.h),
             Row(

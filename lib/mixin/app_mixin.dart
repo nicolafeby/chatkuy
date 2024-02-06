@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 mixin AppMixin {
-  void showSnackbar(BuildContext context, Color color, String message) {
+  void showAppSnackbar(BuildContext context, Color color, String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(

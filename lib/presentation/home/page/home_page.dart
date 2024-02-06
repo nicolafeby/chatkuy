@@ -7,6 +7,7 @@ import 'package:chatkuy/widgets/custom_group_tile_widget.dart';
 import 'package:chatkuy/widgets/snackbar_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -28,7 +29,13 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
+    _sfReload();
     _gettingUserData();
+  }
+
+  Future _sfReload() async {
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    return await localStorage.reload();
   }
 
   // string manipulation
