@@ -151,6 +151,7 @@ class _LoginPageState extends State<LoginPage> {
           await Helper.saveUserLoggedInStatus(true);
           await Helper.saveUserEmailSF(email);
           await Helper.saveUsernameSF(snapshot.docs[0]['fullName']);
+          await Helper.saveProfilePictureSF(snapshot.docs[0]['profilePic']);
           navigator.pushReplacementNamed(RouterConstant.homePage);
         } else {
           showSnackbar(context, Colors.red, value);

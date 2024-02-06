@@ -1,7 +1,8 @@
-import 'package:chatkuy/presentation/login/login_page.dart';
+import 'package:chatkuy/presentation/edit_profile/edit_profile_page.dart';
 import 'package:chatkuy/router/router_constant.dart';
 import 'package:chatkuy/service/auth_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ProfileArgument {
   final String username;
@@ -29,41 +30,46 @@ class _ProfilePageState extends State<ProfilePage> {
       appBar: AppBar(
         backgroundColor: Theme.of(context).primaryColor,
         elevation: 0,
-        title: const Text(
-          "Profile",
-          style: TextStyle(
-              color: Colors.white, fontSize: 27, fontWeight: FontWeight.bold),
-        ),
+        title: const Text("Profile"),
+        actions: [
+          GestureDetector(
+            onTap: () => Navigator.pushNamed(
+              context,
+              RouterConstant.editProfilePage,
+              arguments: EditProfileArgument(
+                fullName: widget.argument.username,
+              ),
+            ),
+            child: const Padding(
+              padding: EdgeInsets.only(right: 16.0),
+              child: Icon(Icons.edit),
+            ),
+          ),
+        ],
       ),
       drawer: Drawer(
           child: ListView(
-        padding: const EdgeInsets.symmetric(vertical: 50),
+        padding: EdgeInsets.symmetric(vertical: 50.h),
         children: <Widget>[
           Icon(
             Icons.account_circle,
             size: 150,
             color: Colors.grey[700],
           ),
-          const SizedBox(
-            height: 15,
-          ),
+          SizedBox(height: 15.h),
           Text(
             widget.argument.username,
             textAlign: TextAlign.center,
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
-          const SizedBox(
-            height: 30,
-          ),
-          const Divider(
-            height: 2,
-          ),
+          SizedBox(height: 30.h),
+          Divider(height: 2.h),
           ListTile(
             onTap: () {
               Navigator.pushNamed(context, RouterConstant.homePage);
             },
             contentPadding:
-                const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                EdgeInsets.symmetric(horizontal: 20.w, vertical: 5.h),
             leading: const Icon(Icons.group),
             title: const Text(
               "Groups",
@@ -75,7 +81,7 @@ class _ProfilePageState extends State<ProfilePage> {
             selected: true,
             selectedColor: Theme.of(context).primaryColor,
             contentPadding:
-                const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                EdgeInsets.symmetric(horizontal: 20.w, vertical: 5.h),
             leading: const Icon(Icons.group),
             title: const Text(
               "Profile",
@@ -105,10 +111,8 @@ class _ProfilePageState extends State<ProfilePage> {
                           onPressed: () async {
                             final navigator = Navigator.of(context);
                             await authService.signOut();
-                            navigator.pushAndRemoveUntil(
-                                MaterialPageRoute(
-                                    builder: (context) => const LoginPage()),
-                                (route) => false);
+                            navigator.pushNamedAndRemoveUntil(
+                                RouterConstant.loginPage, (route) => false);
                           },
                           icon: const Icon(
                             Icons.done,
@@ -120,17 +124,19 @@ class _ProfilePageState extends State<ProfilePage> {
                   });
             },
             contentPadding:
-                const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                EdgeInsets.symmetric(horizontal: 20.w, vertical: 5.h),
             leading: const Icon(Icons.exit_to_app),
             title: const Text(
               "Logout",
-              style: TextStyle(color: Colors.black),
+              style: TextStyle(
+                color: Colors.black,
+              ),
             ),
           )
         ],
       )),
       body: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 170),
+        padding: EdgeInsets.symmetric(horizontal: 40.w, vertical: 170.h),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
@@ -139,24 +145,26 @@ class _ProfilePageState extends State<ProfilePage> {
               size: 200,
               color: Colors.grey[700],
             ),
-            const SizedBox(
-              height: 15,
-            ),
+            SizedBox(height: 15.h),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const Text("Full Name", style: TextStyle(fontSize: 17)),
-                Text(widget.argument.username,
-                    style: const TextStyle(fontSize: 17)),
+                Text(
+                  widget.argument.username,
+                  style: const TextStyle(fontSize: 17),
+                ),
               ],
             ),
-            const Divider(height: 20),
+            Divider(height: 20.h),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const Text("Email", style: TextStyle(fontSize: 17)),
-                Text(widget.argument.email,
-                    style: const TextStyle(fontSize: 17)),
+                Text(
+                  widget.argument.email,
+                  style: const TextStyle(fontSize: 17),
+                ),
               ],
             ),
           ],

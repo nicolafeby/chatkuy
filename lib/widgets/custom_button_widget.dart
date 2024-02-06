@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class CustomButtonWidget extends StatelessWidget {
   final String text;
-  final Function() onPressed;
+  final Function()? onPressed;
   final double? width;
   final double? height;
   const CustomButtonWidget({

@@ -6,4 +6,5 @@ class RouterConstant {
   static const String chatPage = '/chat';
   static const String groupInfoPage = '/grouInfo';
   static const String searchPage = '/search';
+  static const String editProfilePage = '/editProfile';
 }

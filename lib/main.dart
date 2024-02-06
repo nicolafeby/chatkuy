@@ -51,6 +51,15 @@ class _MyAppState extends State<MyApp> {
           debugShowCheckedModeBanner: false,
           onGenerateRoute: router.Router().generateAppRoutes,
           theme: ThemeData(
+            appBarTheme: AppBarTheme(
+              // backgroundColor: Theme.of(context).primaryColor,
+              iconTheme: const IconThemeData(color: Colors.white),
+              titleTextStyle: TextStyle(
+                color: Colors.white,
+                fontSize: 22.sp,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
             primaryColor: AppColor.primaryColor,
             scaffoldBackgroundColor: Colors.white,
             colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
