@@ -6,12 +6,16 @@ class ChatInputText extends StatelessWidget {
   final Function() onTap;
   final Function() sendMessage;
   final TextEditingController messageController;
+  final bool? isDisable;
+  final Function(String)? onChanged;
   const ChatInputText({
     super.key,
     required this.focusNode,
     required this.onTap,
     required this.sendMessage,
     required this.messageController,
+    this.isDisable = true,
+    this.onChanged,
   });
 
   @override
@@ -36,6 +40,7 @@ class ChatInputText extends StatelessWidget {
                 keyboardType: TextInputType.multiline,
                 focusNode: focusNode,
                 onTap: onTap,
+                onChanged: onChanged,
                 controller: messageController,
                 style: const TextStyle(color: Colors.white),
                 decoration: const InputDecoration(
@@ -52,13 +57,17 @@ class ChatInputText extends StatelessWidget {
                 height: 50,
                 width: 50,
                 decoration: BoxDecoration(
-                  color: Theme.of(context).primaryColor,
+                  color: isDisable!
+                      ? Theme.of(context).disabledColor
+                      : Theme.of(context).primaryColor,
                   borderRadius: BorderRadius.circular(30),
                 ),
-                child: const Center(
+                child: Center(
                   child: Icon(
                     Icons.send,
-                    color: Colors.white,
+                    color: isDisable!
+                        ? Colors.white.withOpacity(0.5)
+                        : Colors.white,
                   ),
                 ),
               ),

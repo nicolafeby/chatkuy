@@ -44,11 +44,11 @@ class AuthService {
 
   Future signOut() async {
     try {
+      await auth.signOut();
       await Helper.saveUserLoggedInStatus(false);
       await Helper.saveUserEmailSF('');
       await Helper.saveUsernameSF('');
       await Helper.saveProfilePictureSF('');
-      await auth.signOut();
     } on FirebaseAuthException catch (e) {
       return e.message;
     }

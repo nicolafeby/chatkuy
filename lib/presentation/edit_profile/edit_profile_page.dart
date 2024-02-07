@@ -163,7 +163,11 @@ class _EditProfilePageState extends State<EditProfilePage> with AppMixin {
       });
 
       if (mounted) {
-        Navigator.pushNamed(context, RouterConstant.homePage);
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          RouterConstant.homePage,
+          (route) => false,
+        );
         showAppSnackbar(
           context,
           Colors.green,
