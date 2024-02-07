@@ -17,11 +17,11 @@ jobs:
           flutter-version: "3.13.8"
       - name: Get previous build number
         id: get_prev_build_number
-        run: echo "::set-output name=build_number::$(grep 'version:' pubspec.yaml | awk -F'[+]' '{print $2}' | cut -d ' ' -f 1)"
+        run: echo "::set-output name=build_number::$(grep 'version:' pubspec.yaml | awk '{ match($0,/([0-9]+)\+([0-9]+)/,a); a[1]=a[1]+1; a[2]=a[2]+1; sub(/[0-9]+\+[0-9]+/,a[1]"+"a[2])}1'"
 
       - name: Get current build number
         id: get_curr_build_number
-        run: echo "::set-output name=build_number::$(grep 'version:' pubspec.yaml | awk -F'[+]' '{print $2}' | cut -d ' ' -f 1)"
+        run: echo "::set-output name=build_number::$(grep 'version:' pubspec.yaml | awk '{ match($0,/([0-9]+)\+([0-9]+)/,a); a[1]=a[1]+1; a[2]=a[2]+1; sub(/[0-9]+\+[0-9]+/,a[1]"+"a[2])}1'"
 
       - name: Compare build numbers
         id: compare_build_numbers
