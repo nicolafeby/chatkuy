@@ -7,38 +7,48 @@ import 'package:chatkuy/service/database_service.dart';
 import 'package:chatkuy/widgets/message_tile.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ChatArgument {
-  final String groupId;
-  final String groupName;
-  final String userName;
-
   const ChatArgument({
     required this.groupId,
     required this.groupName,
     required this.userName,
   });
+
+  final String groupId;
+  final String groupName;
+  final String userName;
 }
 
 class ChatPage extends StatefulWidget {
-  final ChatArgument argument;
   const ChatPage({Key? key, required this.argument}) : super(key: key);
+
+  final ChatArgument argument;
 
   @override
   State<ChatPage> createState() => _ChatPageState();
 }
 
 class _ChatPageState extends State<ChatPage> {
+  String admin = "";
   Stream<QuerySnapshot>? chats;
   TextEditingController messageController = TextEditingController();
+
   final ScrollController _controller = ScrollController();
   final FocusNode _focusNode = FocusNode();
-  String admin = "";
+  bool _isDisabledButtonSend = true;
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   void initState() {
-    getChatandAdmin();
     super.initState();
+    getChatandAdmin();
   }
 
   getChatandAdmin() {
@@ -56,16 +66,21 @@ class _ChatPageState extends State<ChatPage> {
     });
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-      child: Scaffold(
-        resizeToAvoidBottomInset: true,
-        appBar: _buildAppBar(),
-        body: _buildBody(),
-      ),
-    );
+  sendMessage() {
+    if (messageController.text.isNotEmpty) {
+      Map<String, dynamic> chatMessageMap = {
+        "message": messageController.text.trim(),
+        "sender": widget.argument.userName,
+        "time": DateTime.now().millisecondsSinceEpoch,
+      };
+
+      DatabaseService().sendMessage(
+          chatMessagesData: chatMessageMap, groupId: widget.argument.groupId);
+      setState(() {
+        messageController.clear();
+      });
+      _isDisabledButtonSend = true;
+    }
   }
 
   Widget _buildBody() {
@@ -78,6 +93,7 @@ class _ChatPageState extends State<ChatPage> {
             builder: (context, AsyncSnapshot snapshot) {
               if (snapshot.hasData) {
                 return ListView.builder(
+                  padding: EdgeInsets.only(top: 8.h),
                   controller: _controller,
                   reverse: true,
                   itemCount: snapshot.data.docs.length,
@@ -105,7 +121,12 @@ class _ChatPageState extends State<ChatPage> {
           ),
         ),
         ChatInputText(
+          isDisable: _isDisabledButtonSend,
           focusNode: _focusNode,
+          onChanged: (value) {
+            setState(() {});
+            _isDisabledButtonSend = value.trim().isEmpty;
+          },
           onTap: () {
             setState(() {
               if (messageController.text.isNotEmpty) {
@@ -149,19 +170,15 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
-  sendMessage() {
-    if (messageController.text.isNotEmpty) {
-      Map<String, dynamic> chatMessageMap = {
-        "message": messageController.text,
-        "sender": widget.argument.userName,
-        "time": DateTime.now().millisecondsSinceEpoch,
-      };
-
-      DatabaseService().sendMessage(
-          chatMessagesData: chatMessageMap, groupId: widget.argument.groupId);
-      setState(() {
-        messageController.clear();
-      });
-    }
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+      child: Scaffold(
+        resizeToAvoidBottomInset: true,
+        appBar: _buildAppBar(),
+        body: _buildBody(),
+      ),
+    );
   }
 }
