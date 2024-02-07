@@ -29,7 +29,7 @@ jobs:
         run: |
           oldBuildNumber=$(curl --header "Authorization: token ${{ secrets.GITHUB_TOKEN }}" -s -L https://raw.githubusercontent.com/nicolafeby/chatkuy/dev/pubspec.yaml)
           # versionPubspec=$(grep -i -e "version:" pubspec.yaml)
-          buildNumber=$(echo $versionPubspec | cut -d "+" -f2)
+          buildNumber=$(echo $oldBuildNumber | cut -d "+" -f2)
           echo " Check Previous Build number in pubspec.yaml: $oldBuildNumber"
 
       - name: Run flutter clean
