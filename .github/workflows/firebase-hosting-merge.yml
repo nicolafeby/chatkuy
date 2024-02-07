@@ -18,24 +18,27 @@ jobs:
       - uses: subosito/flutter-action@v1
         with:
           flutter-version: "3.13.8"
-      - name: Get previous version
-        id: get_previous_version
-        run: echo "::set-output name=previous_version::$(cat previous_version.txt)"
-        continue-on-error: true
-      - name: Get current version
-        id: get_current_version
+      - name: Check Build Number
+        id: check_build_number
         run: |
-          version=$(grep 'version: ' pubspec.yaml | awk '{print $2}')
-          version_no_build=$(echo $version | cut -d '+' -f 1)
-          echo "::set-output name=current_version::$version_no_build"
-      - name: Compare versions
-        run: |
-          if [[ "${{ steps.get_previous_version.outputs.previous_version }}" == "${{ steps.get_current_version.outputs.current_version }}" ]]; then
-          echo "Version has not been updated. Failing the workflow."
-          exit 1
+          set -e
+          versionPubspec=$(grep -i -e "version:" pubspec.yaml)
+          buildNumber=$(echo $versionPubspec | cut -d "+" -f2)
+          echo "Build number in pubspec.yaml: $buildNumber"
+
+          previous_version=$(curl -sL https://raw.githubusercontent.com/nicolafeby/chatkuy/master/pubspec.yaml | grep 'version: ' | awk '{print $2}')
+          oldBuildNumber=$(echo $previous_version | cut -d "+" -f2)
+          echo "Check Previous Build number in pubspec.yaml: $oldBuildNumber"
+
+          if [ -n "$oldBuildNumber" ] && [ -n "$buildNumber" ]; then
+            if [ "$buildNumber" -le "$oldBuildNumber" ]; then
+              echo "Build number is the same as or lower than the previous one. Please increase the build number."
+              exit 1
+            fi
+          else
+            echo "Failed to retrieve build numbers."
+            exit 1
           fi
-      - name: Store current version
-        run: echo "${{ steps.get_current_version.outputs.current_version }}" > previous_version.txt
       - name: Run flutter clean
         run: flutter clean
       - name: "Run Pub Get"
