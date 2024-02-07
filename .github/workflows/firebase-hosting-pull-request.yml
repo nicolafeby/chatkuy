@@ -27,7 +27,7 @@ jobs:
       - name: Dev Check Previous Build
         id: dev_check_previous_build
         run: |
-          oldBuildNumber=$(curl --header "Authorization: token ${{ secrets.GITHUB_TOKEN }}" -s -L https://raw.githubusercontent.com/nicolafeby/chatkuy/dev/dev_build_number.txt)
+          oldBuildNumber=$(curl --header "Authorization: token ${{ secrets.GITHUB_TOKEN }}" -s -L https://raw.githubusercontent.com/nicolafeby/chatkuy/dev/pubspec.txt)
           versionPubspec=$(grep -i -e "version:" pubspec.yaml)
           buildNumber=$(echo $versionPubspec | cut -d "+" -f2)
           isSameAsBefore=$(( buildNumber <= oldBuildNumber ))
