@@ -20,7 +20,8 @@ jobs:
           echo "::set-output name=build_version::$(grep -oP 'version: \K[0-9.]+(?=\+)' pubspec.yaml)"
 
       - name: Store Build Version
-        run: echo "Test"
+        run: |
+          echo "Test"
         env:
           BUILD_VERSION: ${{ steps.get_build_version.outputs.build_version }}
 
