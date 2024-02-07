@@ -50,6 +50,11 @@ class Helper {
     return sf.getString(userProfilePicture);
   }
 
+  static Future sfReload() async {
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    return await localStorage.reload();
+  }
+
   static Future<bool> onWillPop(BuildContext context) {
     DateTime now = DateTime.now();
     if (currentBackPressTime == null ||

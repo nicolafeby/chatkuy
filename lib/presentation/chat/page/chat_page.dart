@@ -83,10 +83,18 @@ class _ChatPageState extends State<ChatPage> {
                   itemCount: snapshot.data.docs.length,
                   itemBuilder: (context, index) {
                     int reversedIndex = snapshot.data.docs.length - 1 - index;
+                    int checkBefore = 0;
+                    if (reversedIndex != 0) {
+                      checkBefore = 1;
+                    }
+
                     return MessageTile(
                         message: snapshot.data.docs[reversedIndex]['message'],
                         sender: snapshot.data.docs[reversedIndex]['sender'],
                         sentByMe: widget.argument.userName ==
+                            snapshot.data.docs[reversedIndex]['sender'],
+                        checkMessageBefore: snapshot.data
+                                .docs[reversedIndex - checkBefore]['sender'] ==
                             snapshot.data.docs[reversedIndex]['sender']);
                   },
                 );

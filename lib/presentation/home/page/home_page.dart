@@ -29,13 +29,8 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    _sfReload();
+    Helper.sfReload();
     _gettingUserData();
-  }
-
-  Future _sfReload() async {
-    SharedPreferences localStorage = await SharedPreferences.getInstance();
-    return await localStorage.reload();
   }
 
   // string manipulation
