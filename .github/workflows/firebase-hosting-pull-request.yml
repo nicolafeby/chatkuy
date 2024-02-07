@@ -15,24 +15,26 @@ jobs:
       - uses: subosito/flutter-action@v1
         with:
           flutter-version: "3.13.8"
-      - name: Get previous version
-        id: get_previous_version
-        run: echo "::set-output name=previous_version::$(cat previous_version.txt)"
-        continue-on-error: true
-      - name: Get current version
-        id: get_current_version
+      - name: Check Build Version
+        uses: actions/cache@v2
+        with:
+          key: build-version
+          path: .build_version
+        env:
+          BUILD_VERSION: ${{ steps.check-build-version.outputs.cache-hit }}
+          PREVIOUS_BUILD_VERSION: ${{ steps.check-build-version.outputs.cache-value }}
+      - uses: ${{ env.BUILD_VERSION == 'true' }}
+      - name: Get Current Build Version
         run: |
-          version=$(grep 'version: ' pubspec.yaml | awk '{print $2}')
-          version_no_build=$(echo $version | cut -d '+' -f 1)
-          echo "::set-output name=current_version::$version_no_build"
-      - name: Compare versions
+          echo "::set-output name=build_version::$(grep -oP 'version: \K[0-9.]+(?=\+)' .build_version)"
+      - name: Check Build Version Increment
         run: |
-          if [[ "${{ steps.get_previous_version.outputs.previous_version }}" == "${{ steps.get_current_version.outputs.current_version }}" ]]; then
-          echo "Version has not been updated. Failing the workflow."
+          if [[ "$(echo "${{ env.PREVIOUS_BUILD_VERSION }} < ${{ env.BUILD_VERSION }}") ]]; then
+          echo "Build version has been incremented"
+          else
+          echo "Build version has not been incremented"
           exit 1
           fi
-      - name: Store current version
-        run: echo "${{ steps.get_current_version.outputs.current_version }}" > previous_version.txt
       - name: Run flutter clean
         run: flutter clean
       - name: "Run flutter pub get"
