@@ -15,24 +15,20 @@ jobs:
       - uses: subosito/flutter-action@v1
         with:
           flutter-version: "3.13.8"
-      - name: Check Build Version
-        uses: actions/cache@v2
-        with:
-          key: build-version
-          path: pubspec.yaml
+      - name: Get previous version
+        id: get_prev_version
+        run: echo "::set-output name=version::$(curl -sSL https://api.github.com/repos/USERNAME/REPOSITORY/contents/pubspec.yaml | jq -r '.content' | base64 -d | grep version | awk -F'+|"' '{print $2}')"
 
-        id: get_previous_build_version
-
-      - name: Get Current Build Version
+      - name: Get current version
+        id: get_curr_version
         run: |
-          echo "::set-output name=build_version::$(grep -oP 'version: \K[0-9.]+(?=\+)' pubspec.yaml)"
+          echo "::set-output name=version::$(grep version: pubspec.yaml | awk -F'+' '{print $2}' | awk -F'\"' '{print $1}')"
 
-      - name: Check Build Version Increment
+      - name: Compare versions
+        id: compare_versions
         run: |
-          if [[ "$(echo "${{ steps.get_previous_build_version.outputs.cache-value }} < ${{ steps.get_current_build_version.outputs.build_version }}") ]]; then
-            echo "Build version has been incremented"
-          else
-            echo "Build version has not been incremented"
+          if [ "${{ steps.get_curr_version.outputs.version }}" == "${{ steps.get_prev_version.outputs.version }}" ]; then
+            echo "Build version has not changed. Stopping build."
             exit 1
           fi
       - name: Run flutter clean
