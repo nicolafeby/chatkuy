@@ -16,6 +16,8 @@ jobs:
         with:
           java-version: "12.x"
       - uses: subosito/flutter-action@v1
+        with:
+          flutter-version: "3.13.8"
       - name: Get previous version
         id: get_previous_version
         run: echo "::set-output name=previous_version::$(cat previous_version.txt)"
