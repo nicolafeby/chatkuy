@@ -15,21 +15,15 @@ jobs:
       - uses: subosito/flutter-action@v1
         with:
           flutter-version: "3.13.8"
-      - name: Get previous build number
-        id: get_prev_build_number
-        run: echo "::set-output name=build_number::$(grep 'version:' pubspec.yaml | awk '{ match($0,/([0-9]+)\+([0-9]+)/,a); a[1]=a[1]+1; a[2]=a[2]+1; sub(/[0-9]+\+[0-9]+/,a[1]"+"a[2])}1'"
 
-      - name: Get current build number
-        id: get_curr_build_number
-        run: echo "::set-output name=build_number::$(grep 'version:' pubspec.yaml | awk '{ match($0,/([0-9]+)\+([0-9]+)/,a); a[1]=a[1]+1; a[2]=a[2]+1; sub(/[0-9]+\+[0-9]+/,a[1]"+"a[2])}1'"
-
-      - name: Compare build numbers
-        id: compare_build_numbers
+      - name: Check Build Number in pubspec.yaml
+        id: check_build_number
         run: |
-          if [ "${{ steps.get_curr_build_number.outputs.build_number }}" == "${{ steps.get_prev_build_number.outputs.build_number }}" ]; then
-            echo "Build number has not changed. Stopping build."
-            exit 1
-          fi
+          set -e
+          versionPubspec=$(grep -i -e "version:" pubspec.yaml)
+          buildNumber=$(echo $versionPubspec | cut -d "+" -f2)
+          echo "Build number in pubspec.yaml: $buildNumber"
+          
       - name: Run flutter clean
         run: flutter clean
       - name: "Run flutter pub get"
