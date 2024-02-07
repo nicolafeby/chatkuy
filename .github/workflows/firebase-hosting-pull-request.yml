@@ -19,13 +19,13 @@ jobs:
         uses: actions/cache@v2
         with:
           key: build-version
-          path: .build_version
+          path: pubspec.yaml
 
         id: get_previous_build_version
 
       - name: Get Current Build Version
         run: |
-          echo "::set-output name=build_version::$(grep -oP 'version: \K[0-9.]+(?=\+)' .build_version)"
+          echo "::set-output name=build_version::$(grep -oP 'version: \K[0-9.]+(?=\+)' pubspec.yaml)"
 
       - name: Check Build Version Increment
         run: |
