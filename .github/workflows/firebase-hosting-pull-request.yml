@@ -28,7 +28,7 @@ jobs:
           oldBuildNumber=$(echo $previous_version | cut -d "+" -f2)
           echo "Check Previous Build number in pubspec.yaml: $oldBuildNumber"
 
-          if [ -n "$oldBuildNumber" ] && [ -n "$buildNumber" ]; then
+          if [ -n "$oldBuildNumber - 1" ] && [ -n "$buildNumber" ]; then
             if [ "$buildNumber" -le "$oldBuildNumber" ]; then
               echo "Build number is the same as or lower than the previous one. Please increase the build number."
               exit 1
