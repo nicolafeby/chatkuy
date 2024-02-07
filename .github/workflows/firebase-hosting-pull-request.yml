@@ -19,7 +19,10 @@ jobs:
         continue-on-error: true
       - name: Get current version
         id: get_current_version
-        run: echo "::set-output name=current_version::$(grep 'version:'pubspec.yaml | awk '{print $2}' | awk -F '+' '{print $1}')"
+        run: |
+          version=$(grep 'version: ' pubspec.yaml | awk '{print $2}')
+          version_no_build=$(echo $version | cut -d '+' -f 1)
+          echo "::set-output name=current_version::$version_no_build"
       - name: Compare versions
         run: |
           if [[ "${{ steps.get_previous_version.outputs.previous_version }}" == "${{ steps.get_current_version.outputs.current_version }}" ]]; then
