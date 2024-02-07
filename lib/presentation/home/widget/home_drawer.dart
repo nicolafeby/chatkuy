@@ -26,10 +26,16 @@ class HomeDrawerWidget extends StatelessWidget {
       child: ListView(
         padding: const EdgeInsets.symmetric(vertical: 50),
         children: <Widget>[
-          Image.file(
-            image,
-            fit: BoxFit.fill,
-          ),
+          profileImage.isEmpty
+              ? Icon(
+                  Icons.account_circle,
+                  size: 150,
+                  color: Colors.grey[700],
+                )
+              : Image.file(
+                  image,
+                  fit: BoxFit.fill,
+                ),
           SizedBox(height: 15.h),
           Text(
             username,

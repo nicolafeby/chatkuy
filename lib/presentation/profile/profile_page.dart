@@ -154,15 +154,21 @@ class _ProfilePageState extends State<ProfilePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(500.h),
-              child: Image.file(
-                image!,
-                height: 150.r,
-                width: 150.r,
-                fit: BoxFit.cover,
-              ),
-            ),
+            widget.argument.imageProfile.isEmpty
+                ? Icon(
+                    Icons.account_circle,
+                    size: 150,
+                    color: Colors.grey[700],
+                  )
+                : ClipRRect(
+                    borderRadius: BorderRadius.circular(500.h),
+                    child: Image.file(
+                      image!,
+                      height: 150.r,
+                      width: 150.r,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
             SizedBox(height: 15.h),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,

@@ -146,7 +146,7 @@ class _EditProfilePageState extends State<EditProfilePage> with AppMixin {
       await DatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
           .editUserData(
         fullname: newName,
-        profilePicture: image!.path,
+        profilePicture: image?.path ?? '',
       )
           .whenComplete(() async {
         QuerySnapshot snapshot =
