@@ -17,12 +17,12 @@ jobs:
           flutter-version: "3.13.8"
       - name: Get previous version
         id: get_prev_version
-        run: echo "::set-output name=version::$(curl -sSL https://api.github.com/repos/nicolafeby/chatkuy/contents/pubspec.yaml | jq -r '.content' | base64 -d | grep version | awk -F'+|"' '{print $2}')"
+        run: echo "name=version::$(curl -sSL https://api.github.com/repos/nicolafeby/chatkuy/contents/pubspec.yaml | jq -r '.content' | base64 -d | grep version | awk -F'+|"' '{print $2}')" >> $GITHUB_OUTPUT
 
       - name: Get current version
         id: get_curr_version
         run: |
-          echo "::set-output name=version::$(grep version: pubspec.yaml | awk -F'+' '{print $2}' | awk -F'\"' '{print $1}')"
+          echo "name=version::$(grep version: pubspec.yaml | awk -F'+' '{print $2}' | awk -F'\"' '{print $1}')" >> $GITHUB_OUTPUT
 
       - name: Compare versions
         id: compare_versions
