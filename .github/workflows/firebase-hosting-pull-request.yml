@@ -15,21 +15,11 @@ jobs:
       - uses: subosito/flutter-action@v1
         with:
           flutter-version: "3.13.8"
-      - name: Get Build Version
+      - name: "Retrieve version"
+        id: version
         run: |
-          echo "::set-output name=build_version::$(grep -oP 'version: \K[0-9.]+(?=\+)' pubspec.yaml)"
-
-      - name: Store Build Version
-        run: |
-          echo "Test"
-        env:
-          BUILD_VERSION: ${{ steps.get_build_version.outputs.build_version }}
-
-      - name: Check Build Version
-        if: ${{ env.BUILD_VERSION == steps.get_previous_build_version.outputs.cache-value }}
-        run: |
-          echo "Build version is the same, stopping action"
-          exit 1
+          echo "OLD_VERSION=$(cat ${GITHUB_WORKSPACE}/pubspec.yaml | grep 'version:' | head -1 | cut -f2- -d: | sed -e 's/^[ \t]*//')" >> $GITHUB_OUTPUT
+          echo "NEW_VERSION=$(awk '{ match($0,/([0-9]+)\+([0-9]+)/,a); a[1]=a[1]+1; a[2]=a[2]+1; sub(/[0-9]+\+[0-9]+/,a[1]"+"a[2])}1' ${GITHUB_WORKSPACE}/pubspec.yaml | grep 'version:' | head -1 | cut -f2- -d: | sed -e 's/^[ \t]*//')" >> $GITHUB_OUTPUT
       - name: Run flutter clean
         run: flutter clean
       - name: "Run flutter pub get"
