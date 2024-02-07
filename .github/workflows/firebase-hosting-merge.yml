@@ -16,19 +16,24 @@ jobs:
         with:
           java-version: "12.x"
       - uses: subosito/flutter-action@v1
-      - name: Check previous build number
-        id: check_build_number
-        run: echo "::set-output name=last_build_number::$(cat build_number.txt)"
+      - name: Get previous version
+        id: get_previous_version
+        run: echo "::set-output name=previous_version::$(cat previous_version.txt)"
         continue-on-error: true
-      - name: Set current build number
-        id: set_build_number
-        run: echo $(( $(cat build_number.txt) + 1 )) > build_number.txt
-      - name: Compare build numbers
+      - name: Get current version
+        id: get_current_version
         run: |
-          if [[ "${{ steps.check_build_number.outputs.last_build_number }}" == "$(cat build_number.txt)" ]]; then
-          echo "Build number has not been updated. Failing the workflow."
+          version=$(grep 'version: ' pubspec.yaml | awk '{print $2}')
+          version_no_build=$(echo $version | cut -d '+' -f 1)
+          echo "::set-output name=current_version::$version_no_build"
+      - name: Compare versions
+        run: |
+          if [[ "${{ steps.get_previous_version.outputs.previous_version }}" == "${{ steps.get_current_version.outputs.current_version }}" ]]; then
+          echo "Version has not been updated. Failing the workflow."
           exit 1
           fi
+      - name: Store current version
+        run: echo "${{ steps.get_current_version.outputs.current_version }}" > previous_version.txt
       - name: Run flutter clean
         run: flutter clean
       - name: "Run Pub Get"
