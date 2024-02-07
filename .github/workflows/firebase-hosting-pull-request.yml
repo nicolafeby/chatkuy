@@ -15,7 +15,7 @@ jobs:
       - uses: subosito/flutter-action@v1
         with:
           flutter-version: "3.13.8"
-      - name: Get Previous Build Version
+      - name: Check Build Version
         uses: actions/cache@v2
         with:
           key: build-version
@@ -28,20 +28,13 @@ jobs:
           echo "::set-output name=build_version::$(grep -oP 'version: \K[0-9.]+(?=\+)' .build_version)"
 
       - name: Check Build Version Increment
-        uses: my-custom-action/check-build-version@v1
-        with:
-          previous_build_version: ${{ steps.get_previous_build_version.outputs.cache-value }}
-          current_build_version: ${{ steps.get_current_build_version.outputs.build_version }}
-
-      - name: Check Build Version Increment
         run: |
-          if [[ "$(echo "${{ inputs.previous_build_version }} < ${{ inputs.current_build_version }}") ]]; then
+          if [[ "$(echo "${{ steps.get_previous_build_version.outputs.cache-value }} < ${{ steps.get_current_build_version.outputs.build_version }}") ]]; then
             echo "Build version has been incremented"
           else
             echo "Build version has not been incremented"
             exit 1
           fi
-          
       - name: Run flutter clean
         run: flutter clean
       - name: "Run flutter pub get"
