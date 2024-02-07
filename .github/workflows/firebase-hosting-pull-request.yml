@@ -16,7 +16,7 @@ jobs:
         with:
           flutter-version: "3.13.8"
 
-      - name: Check Build Number in pubspec.yaml
+      - name: Check Build Number
         id: check_build_number
         run: |
           set -e
@@ -24,12 +24,26 @@ jobs:
           buildNumber=$(echo $versionPubspec | cut -d "+" -f2)
           echo "Build number in pubspec.yaml: $buildNumber"
 
-      - name: Dev Check Previous Build
-        id: dev_check_previous_build
-        run: |
           previous_version=$(curl -sL https://raw.githubusercontent.com/nicolafeby/chatkuy/dev/pubspec.yaml | grep 'version: ' | awk '{print $2}')
           buildNumber=$(echo $previous_version | cut -d "+" -f2)
-          echo " Check Previous Build number in pubspec.yaml: $buildNumber"
+          echo " Check Previous Build number in pubspec.yaml: $previous_version"
+
+          if [ -n "$oldBuildNumber" ] && [ -n "$buildNumber" ]; then
+            if [ "$buildNumber" -le "$oldBuildNumber" ]; then
+              echo "Build number is the same as or lower than the previous one. Please increase the build number."
+              exit 1
+            fi
+          else
+            echo "Failed to retrieve build numbers."
+            exit 1
+          fi
+
+      # - name: Dev Check Previous Build
+      #   id: dev_check_previous_build
+      #   run: |
+      #     previous_version=$(curl -sL https://raw.githubusercontent.com/nicolafeby/chatkuy/dev/pubspec.yaml | grep 'version: ' | awk '{print $2}')
+      #     buildNumber=$(echo $previous_version | cut -d "+" -f2)
+      #     echo " Check Previous Build number in pubspec.yaml: $previous_version"
 
       - name: Run flutter clean
         run: flutter clean
