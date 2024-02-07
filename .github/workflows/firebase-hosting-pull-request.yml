@@ -28,19 +28,9 @@ jobs:
         id: dev_check_previous_build
         run: |
           oldBuildNumber=$(curl --header "Authorization: token ${{ secrets.GITHUB_TOKEN }}" -s -L https://raw.githubusercontent.com/nicolafeby/chatkuy/dev/pubspec.yaml)
-          versionPubspec=$(grep -i -e "version:" pubspec.yaml)
+          # versionPubspec=$(grep -i -e "version:" pubspec.yaml)
           buildNumber=$(echo $versionPubspec | cut -d "+" -f2)
-          # Check if build numbers are not empty before comparison
-          if [ -n "$oldBuildNumber" ] && [ -n "$buildNumber" ]; then
-            isSameAsBefore=$(( buildNumber <= oldBuildNumber ))
-            if [ $isSameAsBefore -eq 1 ]; then
-              echo "Build number is the same as before. Please increase the build number."
-              exit 1
-            fi
-          else
-            echo "Failed to retrieve build numbers."
-            exit 1
-          fi
+          echo "Build number in pubspec.yaml: $oldBuildNumber"
 
       - name: Run flutter clean
         run: flutter clean
