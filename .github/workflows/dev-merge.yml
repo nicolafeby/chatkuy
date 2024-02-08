@@ -18,27 +18,27 @@ jobs:
       - uses: subosito/flutter-action@v1
         with:
           flutter-version: "3.13.8"
-      - name: Check Build Number
-        id: check_build_number
-        run: |
-          set -e
-          versionPubspec=$(grep -i -e "version:" pubspec.yaml)
-          buildNumber=$(echo $versionPubspec | cut -d "+" -f2)
-          echo "Build number in pubspec.yaml: $buildNumber"
+      # - name: Check Build Number
+      #   id: check_build_number
+      #   run: |
+      #     set -e
+      #     versionPubspec=$(grep -i -e "version:" pubspec.yaml)
+      #     buildNumber=$(echo $versionPubspec | cut -d "+" -f2)
+      #     echo "Build number in pubspec.yaml: $buildNumber"
 
-          previous_version=$(curl -sL https://raw.githubusercontent.com/nicolafeby/chatkuy/master/pubspec.yaml | grep 'version: ' | awk '{print $2}')
-          oldBuildNumber=$(echo $previous_version | cut -d "+" -f2)
-          echo "Check Previous Build number in pubspec.yaml: $oldBuildNumber"
+      #     previous_version=$(curl -sL https://raw.githubusercontent.com/nicolafeby/chatkuy/master/pubspec.yaml | grep 'version: ' | awk '{print $2}')
+      #     oldBuildNumber=$(echo $previous_version | cut -d "+" -f2)
+      #     echo "Check Previous Build number in pubspec.yaml: $oldBuildNumber"
 
-          if [ -n "$oldBuildNumber" ] && [ -n "$buildNumber" ]; then
-            if [ "$buildNumber" -le "$oldBuildNumber" ]; then
-              echo "Build number is the same as or lower than the previous one. Please increase the build number."
-              exit 1
-            fi
-          else
-            echo "Failed to retrieve build numbers."
-            exit 1
-          fi
+      #     if [ -n "$oldBuildNumber" ] && [ -n "$buildNumber" ]; then
+      #       if [ "$buildNumber" -le "$oldBuildNumber" ]; then
+      #         echo "Build number is the same as or lower than the previous one. Please increase the build number."
+      #         exit 1
+      #       fi
+      #     else
+      #       echo "Failed to retrieve build numbers."
+      #       exit 1
+      #     fi
       - name: Run flutter clean
         run: flutter clean
       - name: "Run Pub Get"
