@@ -1,6 +1,6 @@
 name: Pull Request to Dev
 
-on:
+"on":
   pull_request:
     branches:
       - dev
