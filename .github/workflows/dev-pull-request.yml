@@ -1,9 +1,10 @@
 name: Pull Request to Dev
 
-"on":
+on:
   pull_request:
     branches:
-      - dev
+      - dev: dev-pull-request.yml
+      # - feature-x: feature-x.yaml
 
 jobs:
   build_and_preview:
