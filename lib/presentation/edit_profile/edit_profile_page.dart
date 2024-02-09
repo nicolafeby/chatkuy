@@ -40,7 +40,7 @@ class _EditProfilePageState extends State<EditProfilePage> with AppMixin {
   final formKey = GlobalKey<FormState>();
   File? image;
   String? newImage;
-  String newName = '';
+  String? newName;
   bool isChangedPhoto = false;
 
   late TextEditingController _controller;
@@ -104,10 +104,18 @@ class _EditProfilePageState extends State<EditProfilePage> with AppMixin {
     return GestureDetector(
       onTap: () => _pickImage(),
       child: widget.argument.profileImage.isEmpty == true
-          ? Icon(
-              Icons.camera_enhance,
-              color: Colors.white,
-              size: 24.r,
+          ? Container(
+              height: 120.r,
+              width: 120.r,
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.black38,
+              ),
+              child: Icon(
+                Icons.camera_enhance,
+                color: Colors.black,
+                size: 24.r,
+              ),
             )
           : ClipRRect(
               borderRadius: BorderRadius.circular(50.r),
@@ -153,8 +161,8 @@ class _EditProfilePageState extends State<EditProfilePage> with AppMixin {
 
       await DatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
           .editUserData(
-        fullname: newName,
-        profilePicture: image?.path ?? '',
+        fullname: newName ?? widget.argument.fullName,
+        profilePicture: image?.path ?? widget.argument.profileImage,
       )
           .whenComplete(() async {
         QuerySnapshot snapshot =
