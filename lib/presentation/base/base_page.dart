@@ -25,7 +25,7 @@ class BasePage extends StatefulWidget {
 class _BasePageState extends State<BasePage> {
   final List<IconData> _icon = [Icons.group, Icons.settings];
   int _selectedIndex = 0;
-  final List<String> _titleMenu = ['Grup', 'Profile'];
+  final List<String> _titleMenu = ['Chat', 'Profil'];
 
   DateTime preBackPress = DateTime.now();
 

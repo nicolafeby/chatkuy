@@ -1,3 +1,5 @@
+import 'package:chatkuy/router/router_constant.dart';
+import 'package:chatkuy/service/auth_service.dart';
 import 'package:flutter/material.dart';
 
 mixin AppMixin {
@@ -51,5 +53,41 @@ mixin AppMixin {
         );
       },
     );
+  }
+
+  void showSignOutConfirmation(BuildContext context,
+      {required AuthService authService}) {
+    showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text("Logout"),
+            content: const Text("Are you sure you want to logout?"),
+            actions: [
+              IconButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                icon: const Icon(
+                  Icons.cancel,
+                  color: Colors.red,
+                ),
+              ),
+              IconButton(
+                onPressed: () async {
+                  final navigator = Navigator.of(context);
+                  await authService.signOut();
+                  navigator.pushNamedAndRemoveUntil(
+                      RouterConstant.loginPage, (route) => false);
+                },
+                icon: const Icon(
+                  Icons.done,
+                  color: Colors.green,
+                ),
+              ),
+            ],
+          );
+        });
   }
 }

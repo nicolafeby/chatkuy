@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:chatkuy/helper/helper.dart';
+import 'package:chatkuy/mixin/app_mixin.dart';
 import 'package:chatkuy/presentation/edit_profile/edit_profile_page.dart';
 import 'package:chatkuy/router/router_constant.dart';
 import 'package:chatkuy/service/auth_service.dart';
@@ -32,7 +33,7 @@ class ProfilePage extends StatefulWidget {
   State<ProfilePage> createState() => _ProfilePageState();
 }
 
-class _ProfilePageState extends State<ProfilePage> {
+class _ProfilePageState extends State<ProfilePage> with AppMixin {
   AuthService authService = AuthService();
   String _email = '';
   File? _image;
@@ -71,6 +72,20 @@ class _ProfilePageState extends State<ProfilePage> {
     return Scaffold(
       appBar: _buildAppbar(),
       body: _buildBody(),
+    );
+  }
+
+  Widget _buildSignoutButton() {
+    return TextButton(
+      onPressed: () => showSignOutConfirmation(context,
+          authService: authService), //authService.signOut(),
+      child: Text(
+        'Keluar',
+        style: Theme.of(context)
+            .textTheme
+            .titleLarge
+            ?.copyWith(color: Colors.red, fontWeight: FontWeight.w500),
+      ),
     );
   }
 
@@ -117,6 +132,8 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
             ],
           ),
+          SizedBox(height: 42.h),
+          _buildSignoutButton(),
         ],
       ),
     );
