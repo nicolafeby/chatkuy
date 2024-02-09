@@ -8,7 +8,7 @@ name: Action For Merge to Dev
       - dev
 
 jobs:
-  build_and_deploy:
+  build_and_preview:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -30,15 +30,15 @@ jobs:
           oldBuildNumber=$(echo $previous_version | cut -d "+" -f2)
           echo "Check Previous Build number in pubspec.yaml: $oldBuildNumber"
 
-      #     if [ -n "$oldBuildNumber" ] && [ -n "$buildNumber" ]; then
-      #       if [ "$buildNumber" -le "$oldBuildNumber" ]; then
-      #         echo "Build number is the same as or lower than the previous one. Please increase the build number."
-      #         exit 1
-      #       fi
-      #     else
-      #       echo "Failed to retrieve build numbers."
-      #       exit 1
-      #     fi
+          if [ -n "$oldBuildNumber" ] && [ -n "$buildNumber" ]; then
+            if [ "$buildNumber" -le "$oldBuildNumber" ]; then
+              echo "Build number is the same as or lower than the previous one. Please increase the build number."
+              exit 1
+            fi
+          else
+            echo "Failed to retrieve build numbers."
+            exit 1
+          fi
       - name: Run flutter clean
         run: flutter clean
       - name: "Run Pub Get"
