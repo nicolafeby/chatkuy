@@ -61,8 +61,11 @@ class _MyAppState extends State<MyApp> {
               ),
             ),
             primaryColor: AppColor.primaryColor,
-            scaffoldBackgroundColor: Colors.white,
-            colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+            scaffoldBackgroundColor: Colors.white, // Colors.white70,
+            colorScheme: ColorScheme.fromSeed(
+              seedColor: Colors.deepPurple,
+              // background: Color(0xFFFFB996),
+            ),
             useMaterial3: true,
           ),
         );

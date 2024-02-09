@@ -1,5 +1,3 @@
-import 'package:chatkuy/widgets/snackbar_widget.dart';
-import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 DateTime? currentBackPressTime;
@@ -53,17 +51,5 @@ class Helper {
   static Future sfReload() async {
     SharedPreferences localStorage = await SharedPreferences.getInstance();
     return await localStorage.reload();
-  }
-
-  static Future<bool> onWillPop(BuildContext context) {
-    DateTime now = DateTime.now();
-    if (currentBackPressTime == null ||
-        now.difference(currentBackPressTime!) > const Duration(seconds: 2)) {
-      currentBackPressTime = now;
-      showSnackbar(
-          context, Colors.green, 'Tekan sekali lagi untuk menutup aplikasi');
-      return Future.value(false);
-    }
-    return Future.value(true);
   }
 }
