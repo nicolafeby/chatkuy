@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:chatkuy/helper/helper.dart';
+import 'package:chatkuy/helper/sf_helper.dart';
 import 'package:chatkuy/presentation/base/base_page.dart';
 import 'package:chatkuy/router/router_constant.dart';
 import 'package:flutter/material.dart';
@@ -33,7 +33,7 @@ class _SplashScreenPageState extends State<SplashScreenPage> {
   }
 
   getUserLiggedInStatus() async {
-    await Helper.getUserLoggedInStatus().then((value) {
+    await SfHelper.getUserLoggedInStatus().then((value) {
       if (value != null) {
         _isLogin = value;
       }

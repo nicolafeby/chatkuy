@@ -1,7 +1,7 @@
 import 'dart:developer';
 import 'dart:io';
 
-import 'package:chatkuy/helper/helper.dart';
+import 'package:chatkuy/helper/sf_helper.dart';
 import 'package:chatkuy/mixin/app_mixin.dart';
 import 'package:chatkuy/presentation/base/base_page.dart';
 import 'package:chatkuy/router/router_constant.dart';
@@ -20,11 +20,13 @@ class EditProfileArgument {
     required this.fullName,
     required this.email,
     required this.profileImage,
+    required this.userName,
   });
 
   final String email;
   final String fullName;
   final String profileImage;
+  final String userName;
 }
 
 class EditProfilePage extends StatefulWidget {
@@ -39,16 +41,20 @@ class EditProfilePage extends StatefulWidget {
 class _EditProfilePageState extends State<EditProfilePage> with AppMixin {
   final formKey = GlobalKey<FormState>();
   File? image;
+  bool isChangedPhoto = false;
+  bool? isUsernameAvailable;
   String? newImage;
   String? newName;
-  bool isChangedPhoto = false;
+  String? userName;
 
-  late TextEditingController _controller;
+  late TextEditingController _fullNameController;
+  late TextEditingController _userNameController;
   bool _isLoading = false;
 
   @override
   void initState() {
-    _controller = TextEditingController(text: widget.argument.fullName);
+    _fullNameController = TextEditingController(text: widget.argument.fullName);
+    _userNameController = TextEditingController(text: widget.argument.userName);
     super.initState();
   }
 
@@ -91,6 +97,8 @@ class _EditProfilePageState extends State<EditProfilePage> with AppMixin {
                     _buildPhotoProfile(context),
                     SizedBox(height: 24.h),
                     _buildEditFullname(context),
+                    SizedBox(height: 8.h),
+                    _buildUsername(),
                     SizedBox(height: 42.h),
                     _buildSaveButton(),
                   ],
@@ -129,9 +137,51 @@ class _EditProfilePageState extends State<EditProfilePage> with AppMixin {
     );
   }
 
+  Future<bool> _checkUsername(String userName) async {
+    final CollectionReference userCollection =
+        FirebaseFirestore.instance.collection('users');
+    QuerySnapshot querySnapshot =
+        await userCollection.where('username', isEqualTo: userName).get();
+    return querySnapshot.docs.isEmpty;
+  }
+
+  Widget _buildUsername() {
+    return TextFormField(
+      controller: _userNameController,
+      textInputAction: TextInputAction.next,
+      decoration: textInputDecoration.copyWith(
+          labelText: "Username",
+          prefixIcon: Icon(
+            Icons.note,
+            color: Theme.of(context).primaryColor,
+          )),
+      onChanged: (val) {
+        setState(() {
+          userName = val.trim();
+          (_fullNameController.text.trim() == widget.argument.fullName &&
+                  !isChangedPhoto == true)
+              ? _checkUsername(userName!).then((value) {
+                  isUsernameAvailable = value;
+                  log('Username is available: $isUsernameAvailable');
+                })
+              : null;
+        });
+      },
+      validator: (val) {
+        if (isUsernameAvailable == false) {
+          return "Username sudah dipakai";
+        } else if (val!.isNotEmpty) {
+          return null;
+        } else {
+          return "Name cannot be empty";
+        }
+      },
+    );
+  }
+
   Widget _buildEditFullname(BuildContext context) {
     return TextFormField(
-      controller: _controller,
+      controller: _fullNameController,
       textInputAction: TextInputAction.next,
       decoration: textInputDecoration.copyWith(
           labelText: "Full Name",
@@ -140,7 +190,7 @@ class _EditProfilePageState extends State<EditProfilePage> with AppMixin {
             color: Theme.of(context).primaryColor,
           )),
       onChanged: (val) async {
-        newName = val;
+        newName = val.trim();
         setState(() {});
       },
       validator: (val) {
@@ -163,15 +213,16 @@ class _EditProfilePageState extends State<EditProfilePage> with AppMixin {
           .editUserData(
         fullname: newName ?? widget.argument.fullName,
         profilePicture: image?.path ?? widget.argument.profileImage,
+        userName: userName ?? widget.argument.userName,
       )
           .whenComplete(() async {
         QuerySnapshot snapshot =
             await DatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
                 .gettingUserData(widget.argument.email);
         // saving the values to our shared preferences
-
-        await Helper.saveUsernameSF(snapshot.docs[0]['fullName']);
-        await Helper.saveProfilePictureSF(snapshot.docs[0]['profilePic']);
+        await SfHelper.saveFullNameSF(snapshot.docs[0]['fullName']);
+        await SfHelper.saveUsernameSF(snapshot.docs[0]['username']);
+        await SfHelper.saveProfilePictureSF(snapshot.docs[0]['profilePic']);
       });
 
       setState(() {
@@ -197,8 +248,9 @@ class _EditProfilePageState extends State<EditProfilePage> with AppMixin {
   Widget _buildSaveButton() {
     return CustomButtonWidget(
       text: 'Simpan',
-      onPressed: (_controller.text == widget.argument.fullName &&
-              !isChangedPhoto == true)
+      onPressed: (_fullNameController.text.trim() == widget.argument.fullName &&
+              !isChangedPhoto == true &&
+              _userNameController.text.trim() == widget.argument.userName)
           ? null
           : _updateData,
     );

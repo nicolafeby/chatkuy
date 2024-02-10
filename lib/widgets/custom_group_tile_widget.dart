@@ -3,29 +3,29 @@ import 'package:chatkuy/router/router_constant.dart';
 import 'package:flutter/material.dart';
 
 class GroupTile extends StatelessWidget {
-  final String userName;
+  final String fullName;
   final String groupId;
   final String groupName;
-  const GroupTile(
-      {Key? key,
-      required this.groupId,
-      required this.groupName,
-      required this.userName})
-      : super(key: key);
+  const GroupTile({
+    Key? key,
+    required this.groupId,
+    required this.groupName,
+    required this.fullName,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.pushNamed(
-          context,
-          RouterConstant.chatPage,
-          arguments: ChatArgument(
-            groupId: groupId,
-            groupName: groupName,
-            userName: userName,
-          ),
-        );
+        // Navigator.pushNamed(
+        //   context,
+        //   RouterConstant.chatPage,
+        //   arguments: ChatArgument(
+        //     groupId: groupId,
+        //     groupName: groupName,
+        //     fullName: fullName,
+        //   ),
+        // );
       },
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
@@ -45,7 +45,7 @@ class GroupTile extends StatelessWidget {
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
           subtitle: Text(
-            "Join the conversation as $userName",
+            "Join the conversation as $fullName",
             style: const TextStyle(fontSize: 13),
           ),
         ),

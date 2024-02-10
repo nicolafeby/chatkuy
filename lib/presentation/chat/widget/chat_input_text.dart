@@ -8,6 +8,7 @@ class ChatInputText extends StatelessWidget {
   final TextEditingController messageController;
   final bool? isDisable;
   final Function(String)? onChanged;
+  final Function() onTapCamera;
   const ChatInputText({
     super.key,
     required this.focusNode,
@@ -16,6 +17,7 @@ class ChatInputText extends StatelessWidget {
     required this.messageController,
     this.isDisable = true,
     this.onChanged,
+    required this.onTapCamera,
   });
 
   @override
@@ -52,10 +54,19 @@ class ChatInputText extends StatelessWidget {
             ),
             const SizedBox(width: 12),
             GestureDetector(
+              onTap: onTapCamera,
+              child: Icon(
+                Icons.camera_alt,
+                color: Colors.white,
+                size: 25.r,
+              ),
+            ),
+            SizedBox(width: 8.w),
+            GestureDetector(
               onTap: sendMessage,
               child: Container(
-                height: 50,
-                width: 50,
+                height: 35.r,
+                width: 35.r,
                 decoration: BoxDecoration(
                   color: isDisable!
                       ? Theme.of(context).disabledColor

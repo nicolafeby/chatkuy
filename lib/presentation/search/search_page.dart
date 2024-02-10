@@ -1,4 +1,4 @@
-import 'package:chatkuy/helper/helper.dart';
+import 'package:chatkuy/helper/sf_helper.dart';
 import 'package:chatkuy/presentation/chat/page/chat_page.dart';
 import 'package:chatkuy/router/router_constant.dart';
 import 'package:chatkuy/service/database_service.dart';
@@ -19,7 +19,7 @@ class _SearchPageState extends State<SearchPage> {
   bool isLoading = false;
   QuerySnapshot? searchSnapshot;
   bool hasUserSearched = false;
-  String userName = "";
+  String fullName = "";
   bool isJoined = false;
   User? user;
 
@@ -30,9 +30,9 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   void getCurrentUserIdAndName() async {
-    await Helper.getUsernameFromSF().then((value) {
+    await SfHelper.getFullNameFromSF().then((value) {
       setState(() {
-        userName = value!;
+        fullName = value!;
       });
     });
     user = FirebaseAuth.instance.currentUser;
@@ -126,7 +126,7 @@ class _SearchPageState extends State<SearchPage> {
             itemCount: searchSnapshot!.docs.length,
             itemBuilder: (context, index) {
               return _buildGroupTile(
-                userName,
+                fullName,
                 searchSnapshot!.docs[index]['groupId'],
                 searchSnapshot!.docs[index]['groupName'],
                 searchSnapshot!.docs[index]['admin'],
@@ -137,12 +137,12 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   void joinedOrNot(
-      String userName, String groupId, String groupname, String admin) async {
+      String fullName, String groupId, String groupname, String admin) async {
     await DatabaseService(uid: user!.uid)
         .isUserJoined(
       groupId: groupId,
       groupName: groupname,
-      userName: userName,
+      fullName: fullName,
     )
         .then((value) {
       setState(() {
@@ -152,9 +152,9 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   Widget _buildGroupTile(
-      String userName, String groupId, String groupName, String admin) {
+      String fullName, String groupId, String groupName, String admin) {
     // function to check whether user already exists in group
-    joinedOrNot(userName, groupId, groupName, admin);
+    joinedOrNot(fullName, groupId, groupName, admin);
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
       leading: CircleAvatar(
@@ -173,7 +173,7 @@ class _SearchPageState extends State<SearchPage> {
           await DatabaseService(uid: user!.uid).toggleGroupJoin(
             groupId: groupId,
             groupName: groupName,
-            username: userName,
+            fullName: fullName,
           );
           if (isJoined) {
             setState(() {
@@ -181,19 +181,17 @@ class _SearchPageState extends State<SearchPage> {
             });
             if (mounted) {
               showSnackbar(
-                  context, Colors.green, "Successfully joined he group");
+                  context, Colors.green, "Successfully joined the group");
             }
-            Future.delayed(const Duration(seconds: 2), () {
-              Navigator.pushNamed(
-                context,
-                RouterConstant.chatPage,
-                arguments: ChatArgument(
-                  groupId: groupId,
-                  groupName: groupName,
-                  userName: userName,
-                ),
-              );
-            });
+            // Future.delayed(const Duration(seconds: 2), () {
+            //   Navigator.pushNamed(
+            //     context,
+            //     RouterConstant.chatPage,
+            //     arguments: ChatArgument(
+
+            //     ),
+            //   );
+            // });
           } else {
             setState(() {
               isJoined = !isJoined;

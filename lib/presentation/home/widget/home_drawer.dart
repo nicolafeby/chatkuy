@@ -7,13 +7,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class HomeDrawerWidget extends StatelessWidget {
-  final String username;
+  final String fullName;
   final String email;
   final AuthService authService;
   final String profileImage;
   const HomeDrawerWidget({
     super.key,
-    required this.username,
+    required this.fullName,
     required this.email,
     required this.authService,
     required this.profileImage,
@@ -38,7 +38,7 @@ class HomeDrawerWidget extends StatelessWidget {
                 ),
           SizedBox(height: 15.h),
           Text(
-            username,
+            fullName,
             textAlign: TextAlign.center,
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
@@ -63,7 +63,7 @@ class HomeDrawerWidget extends StatelessWidget {
                 RouterConstant.profilePage,
                 arguments: ProfileArgument(
                     email: email,
-                    username: username,
+                    fullName: fullName,
                     imageProfile: profileImage),
               );
             },
