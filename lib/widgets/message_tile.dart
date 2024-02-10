@@ -1,21 +1,23 @@
 import 'package:chatkuy/helper/date_helper.dart';
+import 'package:chatkuy/models/message_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:intl/intl.dart';
 
 class MessageTile extends StatelessWidget {
-  final String message;
-  final String sender;
-  final bool sentByMe;
-  final bool checkMessageBefore;
-  final String messageTime;
+  // final bool checkMessageBefore;
+  // final String messageTime;
+  final bool isMe;
+  final bool isImage;
+  final Message message;
 
   const MessageTile({
     Key? key,
+    required this.isMe,
+    required this.isImage,
     required this.message,
-    required this.sender,
-    required this.sentByMe,
-    required this.checkMessageBefore,
-    required this.messageTime,
+    // required this.checkMessageBefore,
+    // required this.messageTime,
   }) : super(key: key);
 
   @override
@@ -23,16 +25,16 @@ class MessageTile extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.only(
         bottom: 2,
-        left: sentByMe ? 0 : 24,
-        right: sentByMe ? 24 : 0,
+        left: isMe ? 0 : 24,
+        right: isMe ? 24 : 0,
       ),
       child: Column(
         crossAxisAlignment:
-            sentByMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+            isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
         children: [
           Visibility(
-            visible: !checkMessageBefore,
-            child: _buildDisplayName(context),
+            visible: false, // checkMessageBefore,
+            child: SizedBox(height: 8.h), // _buildDisplayName(context),
           ),
           _buildDisplayChat(context),
         ],
@@ -45,12 +47,12 @@ class MessageTile extends StatelessWidget {
       children: [
         SizedBox(height: 4.h),
         Text(
-          sender.toUpperCase(),
+          message.senderId.toUpperCase(),
           textAlign: TextAlign.start,
           style: TextStyle(
             fontSize: 13,
             fontWeight: FontWeight.bold,
-            color: sentByMe ? Theme.of(context).primaryColor : Colors.grey[700],
+            color: isMe ? Theme.of(context).primaryColor : Colors.grey[700],
             letterSpacing: -0.5,
           ),
         ),
@@ -60,14 +62,14 @@ class MessageTile extends StatelessWidget {
 
   Widget _buildDisplayChat(BuildContext context) {
     return Container(
-      alignment: sentByMe ? Alignment.centerRight : Alignment.centerLeft,
+      alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
-        margin: sentByMe
+        margin: isMe
             ? const EdgeInsets.only(left: 30)
             : const EdgeInsets.only(right: 30),
         padding: const EdgeInsets.only(top: 8, bottom: 8, left: 16, right: 16),
         decoration: BoxDecoration(
-            borderRadius: sentByMe
+            borderRadius: isMe
                 ? BorderRadius.only(
                     topLeft: Radius.circular(12.r),
                     topRight: Radius.circular(12.r),
@@ -78,36 +80,46 @@ class MessageTile extends StatelessWidget {
                     topRight: Radius.circular(12.r),
                     bottomRight: Radius.circular(12.r),
                   ),
-            color:
-                sentByMe ? Theme.of(context).primaryColor : Colors.grey[700]),
+            color: isMe ? Theme.of(context).primaryColor : Colors.grey[700]),
         child: Column(
           crossAxisAlignment:
-              sentByMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+              isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
           children: [
             Row(
               crossAxisAlignment: CrossAxisAlignment.end,
               mainAxisSize: MainAxisSize.min,
               children: [
-                sentByMe
-                    ? message.length <= 30
+                isMe
+                    ? message.content.length <= 30
                         ? _buildTime(context)
                         : const SizedBox()
                     : const SizedBox(),
                 Flexible(
-                  child: Text(
-                    message,
-                    textAlign: TextAlign.start,
-                    style: const TextStyle(fontSize: 16, color: Colors.white),
-                  ),
+                  child: isImage
+                      ? Container(
+                          height: 200,
+                          width: 200,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(15),
+                            image: DecorationImage(
+                              image: NetworkImage(message.content),
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        )
+                      : Text(message.content,
+                          style: const TextStyle(color: Colors.white)),
                 ),
-                !sentByMe
-                    ? message.length <= 30
+                !isMe
+                    ? message.content.length <= 30
                         ? _buildTime(context)
                         : const SizedBox()
                     : const SizedBox(),
               ],
             ),
-            message.length >= 30 ? _buildTime(context) : const SizedBox(),
+            message.content.length >= 30
+                ? _buildTime(context)
+                : const SizedBox(),
           ],
         ),
       ),
@@ -115,17 +127,18 @@ class MessageTile extends StatelessWidget {
   }
 
   Widget _buildTime(BuildContext context) {
+    String formattedTime = DateFormat.Hm().format(message.sentTime);
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        SizedBox(width: sentByMe ? 0 : 4.w),
+        SizedBox(width: isMe ? 0 : 4.w),
         Text(
-          DateHelper.getTime(messageTime, false),
+          formattedTime, //DateHelper.getTime(message.sentTime.toString(), false),
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: sentByMe ? Colors.black54 : Colors.white60,
+                color: isMe ? Colors.black54 : Colors.white60,
               ),
         ),
-        SizedBox(width: !sentByMe ? 0 : 4.w),
+        SizedBox(width: !isMe ? 0 : 4.w),
       ],
     );
   }

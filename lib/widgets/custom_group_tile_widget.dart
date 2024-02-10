@@ -17,15 +17,15 @@ class GroupTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.pushNamed(
-          context,
-          RouterConstant.chatPage,
-          arguments: ChatArgument(
-            groupId: groupId,
-            groupName: groupName,
-            fullName: fullName,
-          ),
-        );
+        // Navigator.pushNamed(
+        //   context,
+        //   RouterConstant.chatPage,
+        //   arguments: ChatArgument(
+        //     groupId: groupId,
+        //     groupName: groupName,
+        //     fullName: fullName,
+        //   ),
+        // );
       },
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
