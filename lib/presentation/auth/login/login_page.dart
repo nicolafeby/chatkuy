@@ -1,5 +1,5 @@
 import 'package:chatkuy/constants/app_constant.dart';
-import 'package:chatkuy/helper/helper.dart';
+import 'package:chatkuy/helper/sf_helper.dart';
 import 'package:chatkuy/presentation/base/base_page.dart';
 import 'package:chatkuy/router/router_constant.dart';
 import 'package:chatkuy/service/auth_service.dart';
@@ -149,10 +149,10 @@ class _LoginPageState extends State<LoginPage> {
               await DatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
                   .gettingUserData(email);
           // saving the values to our shared preferences
-          await Helper.saveUserLoggedInStatus(true);
-          await Helper.saveUserEmailSF(email);
-          await Helper.saveUsernameSF(snapshot.docs[0]['fullName']);
-          await Helper.saveProfilePictureSF(snapshot.docs[0]['profilePic']);
+          await SfHelper.saveUserLoggedInStatus(true);
+          await SfHelper.saveUserEmailSF(email);
+          await SfHelper.saveFullNameSF(snapshot.docs[0]['fullName']);
+          await SfHelper.saveProfilePictureSF(snapshot.docs[0]['profilePic']);
           navigator.pushReplacementNamed(RouterConstant.basePage,
               arguments: const BasePageArg(route: BasePageRoute.chat));
         } else {

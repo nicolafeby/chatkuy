@@ -1,4 +1,4 @@
-import 'package:chatkuy/helper/helper.dart';
+import 'package:chatkuy/helper/sf_helper.dart';
 import 'package:chatkuy/router/router_constant.dart';
 import 'package:chatkuy/service/auth_service.dart';
 import 'package:chatkuy/service/database_service.dart';
@@ -19,7 +19,7 @@ class _HomePageState extends State<HomePage> {
   String email = "";
   String groupName = "";
   Stream? groups;
-  String username = "";
+  String fullName = "";
   String profileImage = '';
 
   bool _isLoading = false;
@@ -27,7 +27,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    Helper.sfReload();
+    SfHelper.sfReload();
     _gettingUserData();
   }
 
@@ -41,17 +41,17 @@ class _HomePageState extends State<HomePage> {
   }
 
   _gettingUserData() async {
-    await Helper.getUserEmailFromSF().then((value) {
+    await SfHelper.getUserEmailFromSF().then((value) {
       setState(() {
         email = value!;
       });
     });
-    await Helper.getUsernameFromSF().then((value) {
+    await SfHelper.getFullNameFromSF().then((value) {
       setState(() {
-        username = value!;
+        fullName = value!;
       });
     });
-    await Helper.getProfilePictureFromSF().then((value) {
+    await SfHelper.getProfilePictureFromSF().then((value) {
       setState(() {
         profileImage = value!;
       });
@@ -128,7 +128,7 @@ class _HomePageState extends State<HomePage> {
                       DatabaseService(
                               uid: FirebaseAuth.instance.currentUser!.uid)
                           .createGroup(
-                              username: username,
+                              fullName: fullName,
                               id: FirebaseAuth.instance.currentUser!.uid,
                               groupName: groupName)
                           .whenComplete(() {
@@ -166,7 +166,7 @@ class _HomePageState extends State<HomePage> {
                   return GroupTile(
                     groupId: getId(snapshot.data['groups'][reverseIndex]),
                     groupName: getName(snapshot.data['groups'][reverseIndex]),
-                    userName: snapshot.data['fullName'],
+                    fullName: snapshot.data['fullName'],
                   );
                 },
               );

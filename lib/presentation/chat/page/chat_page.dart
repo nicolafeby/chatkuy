@@ -15,12 +15,12 @@ class ChatArgument {
   const ChatArgument({
     required this.groupId,
     required this.groupName,
-    required this.userName,
+    required this.fullName,
   });
 
   final String groupId;
   final String groupName;
-  final String userName;
+  final String fullName;
 }
 
 class ChatPage extends StatefulWidget {
@@ -73,7 +73,7 @@ class _ChatPageState extends State<ChatPage> {
     if (messageController.text.isNotEmpty) {
       Map<String, dynamic> chatMessageMap = {
         "message": messageController.text.trim(),
-        "sender": widget.argument.userName,
+        "sender": widget.argument.fullName,
         "time": DateTime.now().toIso8601String(),
       };
 
@@ -108,10 +108,11 @@ class _ChatPageState extends State<ChatPage> {
                     log(snapshot.data.docs[reversedIndex]['message']);
 
                     return MessageTile(
-                      messageTime: snapshot.data.docs[reversedIndex]['time'],
+                      messageTime:
+                          snapshot.data.docs[reversedIndex]['time'].toString(),
                       message: snapshot.data.docs[reversedIndex]['message'],
                       sender: snapshot.data.docs[reversedIndex]['sender'],
-                      sentByMe: widget.argument.userName ==
+                      sentByMe: widget.argument.fullName ==
                           snapshot.data.docs[reversedIndex]['sender'],
                       checkMessageBefore: snapshot.data
                               .docs[reversedIndex - checkBefore]['sender'] ==
