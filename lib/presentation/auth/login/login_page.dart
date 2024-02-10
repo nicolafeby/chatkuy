@@ -1,5 +1,6 @@
 import 'package:chatkuy/constants/app_constant.dart';
 import 'package:chatkuy/helper/helper.dart';
+import 'package:chatkuy/presentation/base/base_page.dart';
 import 'package:chatkuy/router/router_constant.dart';
 import 'package:chatkuy/service/auth_service.dart';
 import 'package:chatkuy/service/database_service.dart';
@@ -152,7 +153,8 @@ class _LoginPageState extends State<LoginPage> {
           await Helper.saveUserEmailSF(email);
           await Helper.saveUsernameSF(snapshot.docs[0]['fullName']);
           await Helper.saveProfilePictureSF(snapshot.docs[0]['profilePic']);
-          navigator.pushReplacementNamed(RouterConstant.homePage);
+          navigator.pushReplacementNamed(RouterConstant.basePage,
+              arguments: const BasePageArg(route: BasePageRoute.chat));
         } else {
           showSnackbar(context, Colors.red, value);
           setState(() {

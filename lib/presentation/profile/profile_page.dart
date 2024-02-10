@@ -1,199 +1,167 @@
+import 'dart:developer';
 import 'dart:io';
 
+import 'package:chatkuy/helper/helper.dart';
+import 'package:chatkuy/mixin/app_mixin.dart';
 import 'package:chatkuy/presentation/edit_profile/edit_profile_page.dart';
 import 'package:chatkuy/router/router_constant.dart';
 import 'package:chatkuy/service/auth_service.dart';
+import 'package:chatkuy/service/database_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ProfileArgument {
-  final String username;
-  final String email;
-  final String imageProfile;
-
   const ProfileArgument({
     required this.email,
     required this.username,
     required this.imageProfile,
   });
+
+  final String email;
+  final String imageProfile;
+  final String username;
 }
 
 class ProfilePage extends StatefulWidget {
-  final ProfileArgument argument;
-  const ProfilePage({Key? key, required this.argument}) : super(key: key);
+  const ProfilePage({
+    Key? key,
+    // required this.argument,
+  }) : super(key: key);
+
+  // final ProfileArgument argument;
 
   @override
   State<ProfilePage> createState() => _ProfilePageState();
 }
 
-class _ProfilePageState extends State<ProfilePage> {
+class _ProfilePageState extends State<ProfilePage> with AppMixin {
   AuthService authService = AuthService();
-  File? image;
+  String _email = '';
+  File? _image;
+  String _profileImage = '';
+  String _username = '';
 
   @override
   void initState() {
-    image = File(widget.argument.imageProfile);
+    Helper.sfReload();
+    _getLocalUserData();
     super.initState();
+  }
+
+  _getLocalUserData() async {
+    await Helper.getUserEmailFromSF().then((value) {
+      setState(() {
+        _email = value!;
+      });
+    });
+    await Helper.getUsernameFromSF().then((value) {
+      setState(() {
+        _username = value!;
+      });
+    });
+    await Helper.getProfilePictureFromSF().then((value) {
+      setState(() {
+        _profileImage = value!;
+      });
+    });
+    _image = File(_profileImage);
   }
 
   @override
   Widget build(BuildContext context) {
+    log(_profileImage);
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).primaryColor,
-        elevation: 0,
-        title: const Text("Profile"),
-        actions: [
-          GestureDetector(
-            onTap: () => Navigator.pushNamed(
-              context,
-              RouterConstant.editProfilePage,
-              arguments: EditProfileArgument(
-                fullName: widget.argument.username,
-                email: widget.argument.email,
-                profileImage: widget.argument.imageProfile,
-              ),
-            ),
-            child: const Padding(
-              padding: EdgeInsets.only(right: 16.0),
-              child: Icon(Icons.edit),
-            ),
-          ),
-        ],
+      appBar: _buildAppbar(),
+      body: _buildBody(),
+    );
+  }
+
+  Widget _buildSignoutButton() {
+    return TextButton(
+      onPressed: () => showSignOutConfirmation(context,
+          authService: authService), //authService.signOut(),
+      child: Text(
+        'Keluar',
+        style: Theme.of(context)
+            .textTheme
+            .titleLarge
+            ?.copyWith(color: Colors.red, fontWeight: FontWeight.w500),
       ),
-      drawer: Drawer(
-          child: ListView(
-        padding: EdgeInsets.symmetric(vertical: 50.h),
-        children: <Widget>[
-          Icon(
-            Icons.account_circle,
-            size: 150,
-            color: Colors.grey[700],
-          ),
-          SizedBox(height: 15.h),
-          Text(
-            widget.argument.username,
-            textAlign: TextAlign.center,
-            style: const TextStyle(fontWeight: FontWeight.bold),
-          ),
-          SizedBox(height: 30.h),
-          Divider(height: 2.h),
-          ListTile(
-            onTap: () {
-              Navigator.pushNamed(context, RouterConstant.homePage);
-            },
-            contentPadding:
-                EdgeInsets.symmetric(horizontal: 20.w, vertical: 5.h),
-            leading: const Icon(Icons.group),
-            title: const Text(
-              "Groups",
-              style: TextStyle(color: Colors.black),
-            ),
-          ),
-          ListTile(
-            onTap: () {},
-            selected: true,
-            selectedColor: Theme.of(context).primaryColor,
-            contentPadding:
-                EdgeInsets.symmetric(horizontal: 20.w, vertical: 5.h),
-            leading: const Icon(Icons.group),
-            title: const Text(
-              "Profile",
-              style: TextStyle(color: Colors.black),
-            ),
-          ),
-          ListTile(
-            onTap: () async {
-              showDialog(
-                  barrierDismissible: false,
-                  context: context,
-                  builder: (context) {
-                    return AlertDialog(
-                      title: const Text("Logout"),
-                      content: const Text("Are you sure you want to logout?"),
-                      actions: [
-                        IconButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          icon: const Icon(
-                            Icons.cancel,
-                            color: Colors.red,
-                          ),
-                        ),
-                        IconButton(
-                          onPressed: () async {
-                            final navigator = Navigator.of(context);
-                            await authService.signOut();
-                            navigator.pushNamedAndRemoveUntil(
-                                RouterConstant.loginPage, (route) => false);
-                          },
-                          icon: const Icon(
-                            Icons.done,
-                            color: Colors.green,
-                          ),
-                        ),
-                      ],
-                    );
-                  });
-            },
-            contentPadding:
-                EdgeInsets.symmetric(horizontal: 20.w, vertical: 5.h),
-            leading: const Icon(Icons.exit_to_app),
-            title: const Text(
-              "Logout",
-              style: TextStyle(
-                color: Colors.black,
-              ),
-            ),
-          )
-        ],
-      )),
-      body: Container(
-        padding: EdgeInsets.symmetric(horizontal: 40.w, vertical: 170.h),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            widget.argument.imageProfile.isEmpty
-                ? Icon(
-                    Icons.account_circle,
-                    size: 150,
-                    color: Colors.grey[700],
-                  )
-                : ClipRRect(
-                    borderRadius: BorderRadius.circular(500.h),
-                    child: Image.file(
-                      image!,
-                      height: 150.r,
-                      width: 150.r,
-                      fit: BoxFit.cover,
-                    ),
+    );
+  }
+
+  Widget _buildBody() {
+    return Padding(
+      padding: EdgeInsets.all(16.r),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          _profileImage.isEmpty
+              ? Icon(
+                  Icons.account_circle,
+                  size: 150,
+                  color: Colors.grey[700],
+                )
+              : ClipRRect(
+                  borderRadius: BorderRadius.circular(500.h),
+                  child: Image.file(
+                    _image!,
+                    height: 150.r,
+                    width: 150.r,
+                    fit: BoxFit.cover,
                   ),
-            SizedBox(height: 15.h),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text("Full Name", style: TextStyle(fontSize: 17)),
-                Text(
-                  widget.argument.username,
-                  style: const TextStyle(fontSize: 17),
                 ),
-              ],
-            ),
-            Divider(height: 20.h),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text("Email", style: TextStyle(fontSize: 17)),
-                Text(
-                  widget.argument.email,
-                  style: const TextStyle(fontSize: 17),
-                ),
-              ],
-            ),
-          ],
-        ),
+          SizedBox(height: 15.h),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text("Full Name", style: TextStyle(fontSize: 17)),
+              Text(
+                _username,
+                style: const TextStyle(fontSize: 17),
+              ),
+            ],
+          ),
+          Divider(height: 20.h),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text("Email", style: TextStyle(fontSize: 17)),
+              Text(
+                _email,
+                style: const TextStyle(fontSize: 17),
+              ),
+            ],
+          ),
+          SizedBox(height: 42.h),
+          _buildSignoutButton(),
+        ],
       ),
+    );
+  }
+
+  PreferredSizeWidget _buildAppbar() {
+    return AppBar(
+      backgroundColor: Theme.of(context).primaryColor,
+      elevation: 0,
+      title: const Text("Profile"),
+      actions: [
+        GestureDetector(
+          onTap: () => Navigator.pushNamed(
+            context,
+            RouterConstant.editProfilePage,
+            arguments: EditProfileArgument(
+              fullName: _username,
+              email: _email,
+              profileImage: _profileImage,
+            ),
+          ),
+          child: const Padding(
+            padding: EdgeInsets.only(right: 16.0),
+            child: Icon(Icons.edit),
+          ),
+        ),
+      ],
     );
   }
 }

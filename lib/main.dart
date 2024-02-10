@@ -5,7 +5,10 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:chatkuy/router/router.dart' as router;
+import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:timezone/timezone.dart' as tz;
+import 'package:timezone/data/latest.dart' as tz;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,6 +27,10 @@ void main() async {
     );
     await NotificationService().initNotification();
   }
+  tz.initializeTimeZones();
+  tz.setLocalLocation(tz.getLocation(
+    await FlutterNativeTimezone.getLocalTimezone(),
+  ));
 
   runApp(const MyApp());
 }
@@ -56,13 +63,16 @@ class _MyAppState extends State<MyApp> {
               iconTheme: const IconThemeData(color: Colors.white),
               titleTextStyle: TextStyle(
                 color: Colors.white,
-                fontSize: 22.sp,
+                fontSize: 20.sp,
                 fontWeight: FontWeight.w700,
               ),
             ),
             primaryColor: AppColor.primaryColor,
-            scaffoldBackgroundColor: Colors.white,
-            colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+            scaffoldBackgroundColor: Colors.white, // Colors.white70,
+            colorScheme: ColorScheme.fromSeed(
+              seedColor: Colors.deepPurple,
+              // background: Color(0xFFFFB996),
+            ),
             useMaterial3: true,
           ),
         );

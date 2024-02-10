@@ -1,7 +1,9 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:chatkuy/helper/helper.dart';
 import 'package:chatkuy/mixin/app_mixin.dart';
+import 'package:chatkuy/presentation/base/base_page.dart';
 import 'package:chatkuy/router/router_constant.dart';
 import 'package:chatkuy/service/database_service.dart';
 import 'package:chatkuy/widgets/custom_button_widget.dart';
@@ -37,8 +39,9 @@ class EditProfilePage extends StatefulWidget {
 class _EditProfilePageState extends State<EditProfilePage> with AppMixin {
   final formKey = GlobalKey<FormState>();
   File? image;
-  String newImage = '';
-  String newName = '';
+  String? newImage;
+  String? newName;
+  bool isChangedPhoto = false;
 
   late TextEditingController _controller;
   bool _isLoading = false;
@@ -46,7 +49,6 @@ class _EditProfilePageState extends State<EditProfilePage> with AppMixin {
   @override
   void initState() {
     _controller = TextEditingController(text: widget.argument.fullName);
-    newImage = widget.argument.profileImage;
     super.initState();
   }
 
@@ -55,7 +57,11 @@ class _EditProfilePageState extends State<EditProfilePage> with AppMixin {
       final image = await ImagePicker().pickImage(source: ImageSource.gallery);
       if (image == null) return;
       final imageTemp = File(image.path);
-      setState(() => this.image = imageTemp);
+      setState(() {
+        this.image = imageTemp;
+        isChangedPhoto = true;
+      });
+      log('ini dari galeri: ${image.path}');
     } on PlatformException catch (e) {
       debugPrint('Failed to pick image: $e');
     }
@@ -97,19 +103,29 @@ class _EditProfilePageState extends State<EditProfilePage> with AppMixin {
   Widget _buildPhotoProfile(BuildContext context) {
     return GestureDetector(
       onTap: () => _pickImage(),
-      child: Container(
-        height: 100.r,
-        width: 100.r,
-        decoration: BoxDecoration(
-          color: Colors.grey[700],
-          shape: BoxShape.circle,
-        ),
-        child: Icon(
-          Icons.camera_enhance,
-          color: Colors.white,
-          size: 24.r,
-        ),
-      ),
+      child: widget.argument.profileImage.isEmpty == true
+          ? Container(
+              height: 120.r,
+              width: 120.r,
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.black38,
+              ),
+              child: Icon(
+                Icons.camera_enhance,
+                color: Colors.black,
+                size: 24.r,
+              ),
+            )
+          : ClipRRect(
+              borderRadius: BorderRadius.circular(50.r),
+              child: Image.file(
+                image ?? File(widget.argument.profileImage),
+                height: 100.r,
+                width: 100.r,
+                fit: BoxFit.cover,
+              ),
+            ),
     );
   }
 
@@ -145,8 +161,8 @@ class _EditProfilePageState extends State<EditProfilePage> with AppMixin {
 
       await DatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
           .editUserData(
-        fullname: newName,
-        profilePicture: image?.path ?? '',
+        fullname: newName ?? widget.argument.fullName,
+        profilePicture: image?.path ?? widget.argument.profileImage,
       )
           .whenComplete(() async {
         QuerySnapshot snapshot =
@@ -165,8 +181,9 @@ class _EditProfilePageState extends State<EditProfilePage> with AppMixin {
       if (mounted) {
         Navigator.pushNamedAndRemoveUntil(
           context,
-          RouterConstant.homePage,
+          RouterConstant.basePage,
           (route) => false,
+          arguments: const BasePageArg(route: BasePageRoute.profile),
         );
         showAppSnackbar(
           context,
@@ -180,8 +197,8 @@ class _EditProfilePageState extends State<EditProfilePage> with AppMixin {
   Widget _buildSaveButton() {
     return CustomButtonWidget(
       text: 'Simpan',
-      onPressed: (_controller.text == widget.argument.fullName ||
-              newImage == image?.path)
+      onPressed: (_controller.text == widget.argument.fullName &&
+              !isChangedPhoto == true)
           ? null
           : _updateData,
     );
@@ -189,6 +206,7 @@ class _EditProfilePageState extends State<EditProfilePage> with AppMixin {
 
   @override
   Widget build(BuildContext context) {
+    log(widget.argument.profileImage.toString());
     return Scaffold(
       appBar: _buildAppbar(context),
       body: _buildBody(context),

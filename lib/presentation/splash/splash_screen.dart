@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:chatkuy/helper/helper.dart';
+import 'package:chatkuy/presentation/base/base_page.dart';
 import 'package:chatkuy/router/router_constant.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -19,10 +20,13 @@ class _SplashScreenPageState extends State<SplashScreenPage> {
   @override
   void initState() {
     Timer(const Duration(seconds: 2), () {
-      Navigator.pushReplacementNamed(
-        context,
-        _isLogin ? RouterConstant.homePage : RouterConstant.loginPage,
-      );
+      _isLogin
+          ? Navigator.pushReplacementNamed(
+              context,
+              RouterConstant.basePage,
+              arguments: const BasePageArg(route: BasePageRoute.chat),
+            )
+          : Navigator.pushReplacementNamed(context, RouterConstant.loginPage);
     });
     getUserLiggedInStatus();
     super.initState();

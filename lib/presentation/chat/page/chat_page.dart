@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:chatkuy/presentation/chat/widget/chat_input_text.dart';
 import 'package:chatkuy/presentation/group_info/page/group_info_page.dart';
@@ -8,6 +9,7 @@ import 'package:chatkuy/widgets/message_tile.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 class ChatArgument {
   const ChatArgument({
@@ -48,10 +50,11 @@ class _ChatPageState extends State<ChatPage> {
   @override
   void initState() {
     super.initState();
-    getChatandAdmin();
+    _getChatandAdmin();
+    initializeDateFormatting();
   }
 
-  getChatandAdmin() {
+  _getChatandAdmin() {
     DatabaseService().getChats(grubId: widget.argument.groupId).then((val) {
       setState(() {
         chats = val;
@@ -66,12 +69,12 @@ class _ChatPageState extends State<ChatPage> {
     });
   }
 
-  sendMessage() {
+  _sendMessage() {
     if (messageController.text.isNotEmpty) {
       Map<String, dynamic> chatMessageMap = {
         "message": messageController.text.trim(),
         "sender": widget.argument.userName,
-        "time": DateTime.now().millisecondsSinceEpoch,
+        "time": DateTime.now().toIso8601String(),
       };
 
       DatabaseService().sendMessage(
@@ -100,18 +103,20 @@ class _ChatPageState extends State<ChatPage> {
                   itemBuilder: (context, index) {
                     int reversedIndex = snapshot.data.docs.length - 1 - index;
                     int checkBefore = 0;
-                    if (reversedIndex != 0) {
-                      checkBefore = 1;
-                    }
+                    if (reversedIndex != 0) checkBefore = 1;
+
+                    log(snapshot.data.docs[reversedIndex]['message']);
 
                     return MessageTile(
-                        message: snapshot.data.docs[reversedIndex]['message'],
-                        sender: snapshot.data.docs[reversedIndex]['sender'],
-                        sentByMe: widget.argument.userName ==
-                            snapshot.data.docs[reversedIndex]['sender'],
-                        checkMessageBefore: snapshot.data
-                                .docs[reversedIndex - checkBefore]['sender'] ==
-                            snapshot.data.docs[reversedIndex]['sender']);
+                      messageTime: snapshot.data.docs[reversedIndex]['time'],
+                      message: snapshot.data.docs[reversedIndex]['message'],
+                      sender: snapshot.data.docs[reversedIndex]['sender'],
+                      sentByMe: widget.argument.userName ==
+                          snapshot.data.docs[reversedIndex]['sender'],
+                      checkMessageBefore: snapshot.data
+                              .docs[reversedIndex - checkBefore]['sender'] ==
+                          snapshot.data.docs[reversedIndex]['sender'],
+                    );
                   },
                 );
               } else {
@@ -138,7 +143,7 @@ class _ChatPageState extends State<ChatPage> {
               }
             });
           },
-          sendMessage: sendMessage,
+          sendMessage: _sendMessage,
           messageController: messageController,
         ),
       ],

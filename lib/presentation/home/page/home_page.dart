@@ -1,5 +1,4 @@
 import 'package:chatkuy/helper/helper.dart';
-import 'package:chatkuy/presentation/home/widget/home_drawer.dart';
 import 'package:chatkuy/router/router_constant.dart';
 import 'package:chatkuy/service/auth_service.dart';
 import 'package:chatkuy/service/database_service.dart';
@@ -7,7 +6,6 @@ import 'package:chatkuy/widgets/custom_group_tile_widget.dart';
 import 'package:chatkuy/widgets/snackbar_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -153,15 +151,6 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildDrawer() {
-    return HomeDrawerWidget(
-      profileImage: profileImage,
-      username: username,
-      email: email,
-      authService: authService,
-    );
-  }
-
   Widget _buildGroupList() {
     return StreamBuilder(
       stream: groups,
@@ -243,7 +232,7 @@ class _HomePageState extends State<HomePage> {
         backgroundColor: Theme.of(context).primaryColor,
         title: const Text("Chat"),
       ),
-      drawer: _buildDrawer(),
+      // drawer: _buildDrawer(),
       body: _buildGroupList(),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
