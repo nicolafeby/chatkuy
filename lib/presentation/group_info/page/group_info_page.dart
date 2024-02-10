@@ -1,4 +1,5 @@
 import 'package:chatkuy/mixin/app_mixin.dart';
+import 'package:chatkuy/presentation/base/base_page.dart';
 import 'package:chatkuy/router/router_constant.dart';
 import 'package:chatkuy/service/database_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -127,11 +128,14 @@ class _GroupInfoState extends State<GroupInfo> with AppMixin {
                       .toggleGroupJoin(
                     groupId: widget.argument.groupId,
                     groupName: widget.argument.groupName,
-                    username: getName(widget.argument.adminName),
+                    fullName: getName(widget.argument.adminName),
                   )
                       .whenComplete(() {
                     Navigator.pushReplacementNamed(
-                        context, RouterConstant.homePage);
+                      context,
+                      RouterConstant.basePage,
+                      arguments: const BasePageArg(route: BasePageRoute.chat),
+                    );
                   });
                 },
               );
@@ -164,18 +168,24 @@ class _GroupInfoState extends State<GroupInfo> with AppMixin {
                   const SizedBox(
                     width: 20,
                   ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Group: ${widget.argument.groupName}",
-                        style: const TextStyle(fontWeight: FontWeight.w500),
-                      ),
-                      const SizedBox(
-                        height: 5,
-                      ),
-                      Text("Admin: ${getName(widget.argument.adminName)}")
-                    ],
+                  Flexible(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Group: ${widget.argument.groupName}",
+                          style: const TextStyle(fontWeight: FontWeight.w500),
+                        ),
+                        const SizedBox(
+                          height: 5,
+                        ),
+                        Text(
+                          "Admin: ${getName(widget.argument.adminName)}",
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 2,
+                        )
+                      ],
+                    ),
                   )
                 ],
               ),

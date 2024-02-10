@@ -1,4 +1,4 @@
-import 'package:chatkuy/helper/helper.dart';
+import 'package:chatkuy/helper/sf_helper.dart';
 import 'package:chatkuy/service/database_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -7,6 +7,7 @@ class AuthService {
 
   Future registerWithEmainAndPassword({
     required String fullName,
+    required String userName,
     required String email,
     required String password,
     required String profilePicture,
@@ -21,6 +22,7 @@ class AuthService {
           fullName,
           email,
           profilePicture,
+          userName,
         );
         return true;
       }
@@ -45,10 +47,10 @@ class AuthService {
   Future signOut() async {
     try {
       await auth.signOut();
-      await Helper.saveUserLoggedInStatus(false);
-      await Helper.saveUserEmailSF('');
-      await Helper.saveUsernameSF('');
-      await Helper.saveProfilePictureSF('');
+      await SfHelper.saveUserLoggedInStatus(false);
+      await SfHelper.saveUserEmailSF('');
+      await SfHelper.saveFullNameSF('');
+      await SfHelper.saveProfilePictureSF('');
     } on FirebaseAuthException catch (e) {
       return e.message;
     }

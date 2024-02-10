@@ -13,11 +13,15 @@ class DatabaseService {
     String fullname,
     String email,
     String profilePicture,
+    String username,
   ) async {
     return await userCollection.doc(uid).set({
       'fullName': fullname,
+      'username': username,
       'email': email,
       'groups': [],
+      'directMessage': [],
+      'friendList': [],
       'profilePic': profilePicture,
       'uid': uid,
     });
@@ -26,10 +30,12 @@ class DatabaseService {
   Future editUserData({
     required String fullname,
     required String profilePicture,
+    required String userName,
   }) async {
     return await userCollection.doc(uid).update({
       'fullName': fullname,
       'profilePic': profilePicture,
+      'username': userName,
     });
   }
 
@@ -44,14 +50,14 @@ class DatabaseService {
   }
 
   Future createGroup({
-    required String username,
+    required String fullName,
     required String id,
     required String groupName,
   }) async {
     DocumentReference groupDocumentReference = await groupCollection.add({
       'groupName': groupName,
       'groupIcon': '',
-      'admin': '${id}_$username',
+      'admin': '${id}_$fullName',
       'members': [],
       'groupId': '',
       'recentMessage': '',
@@ -59,7 +65,7 @@ class DatabaseService {
     });
 
     await groupDocumentReference.update({
-      'members': FieldValue.arrayUnion(['${id}_$username']),
+      'members': FieldValue.arrayUnion(['${id}_$fullName']),
       'groupId': groupDocumentReference.id,
     });
 
@@ -97,7 +103,7 @@ class DatabaseService {
   Future<bool> isUserJoined(
       {required String groupName,
       required String groupId,
-      required String userName}) async {
+      required String fullName}) async {
     DocumentReference userDocumentReference = userCollection.doc(uid);
     DocumentSnapshot documentSnapshot = await userDocumentReference.get();
 
@@ -111,7 +117,7 @@ class DatabaseService {
 
   Future toggleGroupJoin(
       {required String groupId,
-      required String username,
+      required String fullName,
       required String groupName}) async {
     DocumentReference userDocumentReference = userCollection.doc(uid);
     DocumentReference groupDocumentReference = groupCollection.doc(groupId);
@@ -124,14 +130,14 @@ class DatabaseService {
         "groups": FieldValue.arrayRemove(["${groupId}_$groupName"])
       });
       await groupDocumentReference.update({
-        "members": FieldValue.arrayRemove(["${uid}_$username"])
+        "members": FieldValue.arrayRemove(["${uid}_$fullName"])
       });
     } else {
       await userDocumentReference.update({
         "groups": FieldValue.arrayUnion(["${groupId}_$groupName"])
       });
       await groupDocumentReference.update({
-        "members": FieldValue.arrayUnion(["${uid}_$username"])
+        "members": FieldValue.arrayUnion(["${uid}_$fullName"])
       });
     }
   }

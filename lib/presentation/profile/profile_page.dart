@@ -1,7 +1,7 @@
 import 'dart:developer';
 import 'dart:io';
 
-import 'package:chatkuy/helper/helper.dart';
+import 'package:chatkuy/helper/sf_helper.dart';
 import 'package:chatkuy/mixin/app_mixin.dart';
 import 'package:chatkuy/presentation/edit_profile/edit_profile_page.dart';
 import 'package:chatkuy/router/router_constant.dart';
@@ -13,13 +13,13 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 class ProfileArgument {
   const ProfileArgument({
     required this.email,
-    required this.username,
+    required this.fullName,
     required this.imageProfile,
   });
 
   final String email;
   final String imageProfile;
-  final String username;
+  final String fullName;
 }
 
 class ProfilePage extends StatefulWidget {
@@ -39,29 +39,35 @@ class _ProfilePageState extends State<ProfilePage> with AppMixin {
   String _email = '';
   File? _image;
   String _profileImage = '';
+  String _fullName = '';
   String _username = '';
 
   @override
   void initState() {
-    Helper.sfReload();
+    SfHelper.sfReload();
     _getLocalUserData();
     super.initState();
   }
 
   _getLocalUserData() async {
-    await Helper.getUserEmailFromSF().then((value) {
+    await SfHelper.getUserEmailFromSF().then((value) {
       setState(() {
         _email = value!;
       });
     });
-    await Helper.getUsernameFromSF().then((value) {
+    await SfHelper.getFullNameFromSF().then((value) {
       setState(() {
-        _username = value!;
+        _fullName = value!;
       });
     });
-    await Helper.getProfilePictureFromSF().then((value) {
+    await SfHelper.getProfilePictureFromSF().then((value) {
       setState(() {
         _profileImage = value!;
+      });
+    });
+    await SfHelper.getUsernameFromSF().then((value) {
+      setState(() {
+        _username = value!;
       });
     });
     _image = File(_profileImage);
@@ -117,6 +123,17 @@ class _ProfilePageState extends State<ProfilePage> with AppMixin {
             children: [
               const Text("Full Name", style: TextStyle(fontSize: 17)),
               Text(
+                _fullName,
+                style: const TextStyle(fontSize: 17),
+              ),
+            ],
+          ),
+          Divider(height: 20.h),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text("Username", style: TextStyle(fontSize: 17)),
+              Text(
                 _username,
                 style: const TextStyle(fontSize: 17),
               ),
@@ -151,9 +168,10 @@ class _ProfilePageState extends State<ProfilePage> with AppMixin {
             context,
             RouterConstant.editProfilePage,
             arguments: EditProfileArgument(
-              fullName: _username,
+              fullName: _fullName,
               email: _email,
               profileImage: _profileImage,
+              userName: _username,
             ),
           ),
           child: const Padding(
