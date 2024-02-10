@@ -58,36 +58,107 @@ mixin AppMixin {
   void showSignOutConfirmation(BuildContext context,
       {required AuthService authService}) {
     showDialog(
-        barrierDismissible: false,
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: const Text("Logout"),
-            content: const Text("Are you sure you want to logout?"),
-            actions: [
-              IconButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                icon: const Icon(
-                  Icons.cancel,
-                  color: Colors.red,
-                ),
+      barrierDismissible: false,
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Logout"),
+          content: const Text("Are you sure you want to logout?"),
+          actions: [
+            IconButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              icon: const Icon(
+                Icons.cancel,
+                color: Colors.red,
               ),
-              IconButton(
-                onPressed: () async {
-                  final navigator = Navigator.of(context);
-                  await authService.signOut();
-                  navigator.pushNamedAndRemoveUntil(
-                      RouterConstant.loginPage, (route) => false);
-                },
-                icon: const Icon(
-                  Icons.done,
-                  color: Colors.green,
-                ),
+            ),
+            IconButton(
+              onPressed: () async {
+                final navigator = Navigator.of(context);
+                await authService.signOut();
+                navigator.pushNamedAndRemoveUntil(
+                    RouterConstant.loginPage, (route) => false);
+              },
+              icon: const Icon(
+                Icons.done,
+                color: Colors.green,
               ),
-            ],
-          );
-        });
+            ),
+          ],
+        );
+      },
+    );
   }
+
+  // void showPopUpDialog(
+  //   BuildContext context, {
+  //   required void Function()? onPressed,
+  // }) {
+  //   showDialog(
+  //     barrierDismissible: false,
+  //     context: context,
+  //     builder: (context) {
+  //       return StatefulBuilder(
+  //         builder: ((context, setState) {
+  //           return AlertDialog(
+  //             title: const Text(
+  //               "Create a group",
+  //               textAlign: TextAlign.left,
+  //             ),
+  //             content: Column(
+  //               mainAxisSize: MainAxisSize.min,
+  //               children: [
+  //                 _isLoading == true
+  //                     ? Center(
+  //                         child: CircularProgressIndicator(
+  //                             color: Theme.of(context).primaryColor),
+  //                       )
+  //                     : TextField(
+  //                         onChanged: (val) {
+  //                           setState(() {
+  //                             groupName = val;
+  //                           });
+  //                         },
+  //                         style: const TextStyle(color: Colors.black),
+  //                         decoration: InputDecoration(
+  //                           enabledBorder: OutlineInputBorder(
+  //                               borderSide: BorderSide(
+  //                                   color: Theme.of(context).primaryColor),
+  //                               borderRadius: BorderRadius.circular(20)),
+  //                           errorBorder: OutlineInputBorder(
+  //                               borderSide: const BorderSide(color: Colors.red),
+  //                               borderRadius: BorderRadius.circular(20)),
+  //                           focusedBorder: OutlineInputBorder(
+  //                             borderSide: BorderSide(
+  //                                 color: Theme.of(context).primaryColor),
+  //                             borderRadius: BorderRadius.circular(20),
+  //                           ),
+  //                         ),
+  //                       ),
+  //               ],
+  //             ),
+  //             actions: [
+  //               ElevatedButton(
+  //                 onPressed: () {
+  //                   Navigator.of(context).pop();
+  //                 },
+  //                 style: ElevatedButton.styleFrom(
+  //                     backgroundColor: Theme.of(context).primaryColor),
+  //                 child: const Text("CANCEL"),
+  //               ),
+  //               ElevatedButton(
+  //                 onPressed:onPressed,
+  //                 style: ElevatedButton.styleFrom(
+  //                     backgroundColor: Theme.of(context).primaryColor),
+  //                 child: const Text("CREATE"),
+  //               )
+  //             ],
+  //           );
+  //         }),
+  //       );
+  //     },
+  //   );
+  // }
 }

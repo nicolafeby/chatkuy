@@ -120,7 +120,7 @@ class MessageTile extends StatelessWidget {
       children: [
         SizedBox(width: sentByMe ? 0 : 4.w),
         Text(
-          DateHelper.getTime(messageTime),
+          DateHelper.getTime(messageTime, false),
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
                 color: sentByMe ? Colors.black54 : Colors.white60,
               ),

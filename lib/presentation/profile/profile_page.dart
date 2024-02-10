@@ -6,6 +6,7 @@ import 'package:chatkuy/mixin/app_mixin.dart';
 import 'package:chatkuy/presentation/edit_profile/edit_profile_page.dart';
 import 'package:chatkuy/router/router_constant.dart';
 import 'package:chatkuy/service/auth_service.dart';
+import 'package:chatkuy/service/database_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -43,11 +44,11 @@ class _ProfilePageState extends State<ProfilePage> with AppMixin {
   @override
   void initState() {
     Helper.sfReload();
-    _getUserData();
+    _getLocalUserData();
     super.initState();
   }
 
-  _getUserData() async {
+  _getLocalUserData() async {
     await Helper.getUserEmailFromSF().then((value) {
       setState(() {
         _email = value!;
