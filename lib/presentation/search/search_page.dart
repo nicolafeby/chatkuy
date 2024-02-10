@@ -183,17 +183,15 @@ class _SearchPageState extends State<SearchPage> {
               showSnackbar(
                   context, Colors.green, "Successfully joined the group");
             }
-            Future.delayed(const Duration(seconds: 2), () {
-              Navigator.pushNamed(
-                context,
-                RouterConstant.chatPage,
-                arguments: ChatArgument(
-                  groupId: groupId,
-                  groupName: groupName,
-                  fullName: fullName,
-                ),
-              );
-            });
+            // Future.delayed(const Duration(seconds: 2), () {
+            //   Navigator.pushNamed(
+            //     context,
+            //     RouterConstant.chatPage,
+            //     arguments: ChatArgument(
+
+            //     ),
+            //   );
+            // });
           } else {
             setState(() {
               isJoined = !isJoined;

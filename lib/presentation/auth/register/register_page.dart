@@ -2,13 +2,20 @@ import 'dart:developer';
 
 import 'package:chatkuy/constants/app_constant.dart';
 import 'package:chatkuy/helper/sf_helper.dart';
+import 'package:chatkuy/main.dart';
 import 'package:chatkuy/presentation/base/base_page.dart';
 import 'package:chatkuy/router/router_constant.dart';
 import 'package:chatkuy/service/auth_service.dart';
 import 'package:chatkuy/service/database_service.dart';
+import 'package:chatkuy/service/firestore_service.dart';
+import 'package:chatkuy/service/media_service.dart';
+import 'package:chatkuy/service/notif_service.dart';
+import 'package:chatkuy/service/storage_service.dart';
 import 'package:chatkuy/widgets/snackbar_widget.dart';
 import 'package:chatkuy/widgets/text_input_decoration.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -21,6 +28,11 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
+  final nameController = TextEditingController();
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+  final confirmPasswordController = TextEditingController();
+
   AuthService authService = AuthService();
   String email = '';
   final formKey = GlobalKey<FormState>();
@@ -28,9 +40,12 @@ class _RegisterPageState extends State<RegisterPage> {
   String password = '';
   String profilePicture = '';
   String userName = '';
+  Uint8List? file;
   bool? isUsernameAvailable;
 
   bool _isLoading = false;
+
+  static final notifications = NotificationsService();
 
   void register() async {
     var navigator = Navigator.of(context);
@@ -85,7 +100,7 @@ class _RegisterPageState extends State<RegisterPage> {
             elevation: 0,
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(30))),
-        onPressed: register,
+        onPressed: signUp, //register,
         child: const Text(
           "Register",
           style: TextStyle(color: Colors.white, fontSize: 16),
@@ -126,6 +141,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
   Widget _buildPassword() {
     return TextFormField(
+      controller: passwordController,
       textInputAction: TextInputAction.next,
       obscureText: true,
       decoration: textInputDecoration.copyWith(
@@ -151,6 +167,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
   Widget _buildEmail() {
     return TextFormField(
+      controller: emailController,
       textInputAction: TextInputAction.next,
       decoration: textInputDecoration.copyWith(
         labelText: "Email",
@@ -176,6 +193,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
   Widget _buildFullname() {
     return TextFormField(
+      controller: nameController,
       textInputAction: TextInputAction.next,
       decoration: textInputDecoration.copyWith(
           labelText: "Full Name",
@@ -199,21 +217,41 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   Widget _buildAddProfileImage() {
+    // return GestureDetector(
+    //   onTap: () {}, //=> _pickImage(),
+    //   child: Container(
+    //     height: 100.r,
+    //     width: 100.r,
+    //     decoration: BoxDecoration(
+    //       color: Colors.grey[700],
+    //       shape: BoxShape.circle,
+    //     ),
+    //     child: Icon(
+    //       Icons.camera_enhance,
+    //       color: Colors.white,
+    //       size: 24.r,
+    //     ),
+    //   ),
+    // );
     return GestureDetector(
-      onTap: () {}, //=> _pickImage(),
-      child: Container(
-        height: 100.r,
-        width: 100.r,
-        decoration: BoxDecoration(
-          color: Colors.grey[700],
-          shape: BoxShape.circle,
-        ),
-        child: Icon(
-          Icons.camera_enhance,
-          color: Colors.white,
-          size: 24.r,
-        ),
-      ),
+      onTap: () async {
+        final pickedImage = await MediaService.pickImage();
+        setState(() => file = pickedImage!);
+      },
+      child: file != null
+          ? CircleAvatar(
+              radius: 50,
+              backgroundImage: MemoryImage(file!),
+            )
+          : const CircleAvatar(
+              radius: 50,
+              backgroundColor: AppColor.primaryColor,
+              child: Icon(
+                Icons.add_a_photo,
+                size: 50,
+                color: Colors.white,
+              ),
+            ),
     );
   }
 
@@ -288,5 +326,47 @@ class _RegisterPageState extends State<RegisterPage> {
               ),
             ),
     );
+  }
+
+  Future signUp() async {
+    var navigator = Navigator.of(context);
+    final isValid = formKey.currentState!.validate();
+    if (!isValid) return;
+    if (file == null) {
+      const snackBar =
+          SnackBar(content: Text('Please select a profile picture'));
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      return;
+    }
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(child: CircularProgressIndicator()),
+    );
+
+    await authService
+        .registerAccount(
+      fullName: nameController.text.trim(),
+      userName: userName,
+      email: emailController.text.trim(),
+      password: passwordController.text.trim(),
+      profilePicture: file,
+      notifications: notifications,
+    )
+        .then((value) async {
+      if (value == true) {
+        await SfHelper.saveUserLoggedInStatus(true);
+        await SfHelper.saveUserEmailSF(email);
+        await SfHelper.saveFullNameSF(fullName);
+        await SfHelper.saveUsernameSF(userName);
+
+        navigator.pushNamedAndRemoveUntil(
+            RouterConstant.basePage, (route) => false,
+            arguments: const BasePageArg(route: BasePageRoute.chat));
+        await notifications.requestPermission();
+        await notifications.getToken();
+      }
+    });
   }
 }
