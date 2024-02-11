@@ -1,4 +1,3 @@
-
 import 'package:chatkuy/constants/app_constant.dart';
 import 'package:chatkuy/helper/sf_helper.dart';
 import 'package:chatkuy/presentation/base/base_page.dart';
@@ -19,23 +18,84 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  static final notifications = NotificationsService();
+
+  AuthService authService = AuthService();
+  String email = "";
+  final emailController = TextEditingController();
+  final formKey = GlobalKey<FormState>();
+  String password = "";
+  final passwordController = TextEditingController();
+
+  final bool _isLoading = false;
+
   @override
   void initState() {
     super.initState();
   }
 
-  final formKey = GlobalKey<FormState>();
-  String email = "";
-  String password = "";
-  final bool _isLoading = false;
-  AuthService authService = AuthService();
+  // login() async {
+  //   final navigator = Navigator.of(context);
+  //   if (formKey.currentState!.validate()) {
+  //     setState(() {
+  //       _isLoading = true;
+  //     });
+  //     await authService
+  //         .loginWithEmainAndPassword(email: email, password: password)
+  //         .then((value) async {
+  //       if (value == true) {
+  //         QuerySnapshot snapshot =
+  //             await DatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
+  //                 .gettingUserData(email);
+  //         // saving the values to our shared preferences
+  //         await SfHelper.saveUserLoggedInStatus(true);
+  //         await SfHelper.saveUserEmailSF(email);
+  //         await SfHelper.saveFullNameSF(snapshot.docs[0]['fullName']);
+  //         await SfHelper.saveProfilePictureSF(snapshot.docs[0]['profilePic']);
+  //         navigator.pushReplacementNamed(RouterConstant.basePage,
+  //             arguments: const BasePageArg(route: BasePageRoute.chat));
+  //       } else {
+  //         showSnackbar(context, Colors.red, value);
+  //         setState(() {
+  //           _isLoading = false;
+  //         });
+  //       }
+  //     });
+  //   }
+  // }
 
-  final emailController = TextEditingController();
-  final passwordController = TextEditingController();
-  static final notifications = NotificationsService();
+  Future signIn() async {
+    final navigator = Navigator.of(context);
+    final isValid = formKey.currentState!.validate();
+    if (!isValid) return;
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(child: CircularProgressIndicator()),
+    );
+
+    authService
+        .login(
+      email: emailController.text.trim(),
+      password: passwordController.text.trim(),
+    )
+        .then((value) async {
+      if (value == true) {
+        await SfHelper.saveUserLoggedInStatus(true);
+        navigator.pushNamedAndRemoveUntil(
+            RouterConstant.basePage, (route) => false,
+            arguments: const BasePageArg(route: BasePageRoute.chat));
+        await notifications.requestPermission();
+        await notifications.getToken();
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       body: _isLoading
           ? Center(
               child: CircularProgressIndicator(
@@ -137,63 +197,5 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
     );
-  }
-
-  // login() async {
-  //   final navigator = Navigator.of(context);
-  //   if (formKey.currentState!.validate()) {
-  //     setState(() {
-  //       _isLoading = true;
-  //     });
-  //     await authService
-  //         .loginWithEmainAndPassword(email: email, password: password)
-  //         .then((value) async {
-  //       if (value == true) {
-  //         QuerySnapshot snapshot =
-  //             await DatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
-  //                 .gettingUserData(email);
-  //         // saving the values to our shared preferences
-  //         await SfHelper.saveUserLoggedInStatus(true);
-  //         await SfHelper.saveUserEmailSF(email);
-  //         await SfHelper.saveFullNameSF(snapshot.docs[0]['fullName']);
-  //         await SfHelper.saveProfilePictureSF(snapshot.docs[0]['profilePic']);
-  //         navigator.pushReplacementNamed(RouterConstant.basePage,
-  //             arguments: const BasePageArg(route: BasePageRoute.chat));
-  //       } else {
-  //         showSnackbar(context, Colors.red, value);
-  //         setState(() {
-  //           _isLoading = false;
-  //         });
-  //       }
-  //     });
-  //   }
-  // }
-
-  Future signIn() async {
-    final navigator = Navigator.of(context);
-    final isValid = formKey.currentState!.validate();
-    if (!isValid) return;
-
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => const Center(child: CircularProgressIndicator()),
-    );
-
-    authService
-        .login(
-      email: emailController.text.trim(),
-      password: passwordController.text.trim(),
-    )
-        .then((value) async {
-      if (value == true) {
-        await SfHelper.saveUserLoggedInStatus(true);
-        navigator.pushNamedAndRemoveUntil(
-            RouterConstant.basePage, (route) => false,
-            arguments: const BasePageArg(route: BasePageRoute.chat));
-        await notifications.requestPermission();
-        await notifications.getToken();
-      }
-    });
   }
 }
