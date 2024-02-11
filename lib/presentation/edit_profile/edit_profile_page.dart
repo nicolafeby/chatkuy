@@ -1,19 +1,18 @@
 import 'dart:developer';
-import 'dart:io';
-
-import 'package:chatkuy/helper/sf_helper.dart';
 import 'package:chatkuy/mixin/app_mixin.dart';
 import 'package:chatkuy/presentation/base/base_page.dart';
+import 'package:chatkuy/provider/firebase_provider.dart';
 import 'package:chatkuy/router/router_constant.dart';
-import 'package:chatkuy/service/database_service.dart';
+import 'package:chatkuy/service/media_service.dart';
+import 'package:chatkuy/widgets/cached_network_image.dart';
 import 'package:chatkuy/widgets/custom_button_widget.dart';
 import 'package:chatkuy/widgets/text_input_decoration.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
+import 'package:http/http.dart' as http;
 
 class EditProfileArgument {
   const EditProfileArgument({
@@ -39,8 +38,9 @@ class EditProfilePage extends StatefulWidget {
 }
 
 class _EditProfilePageState extends State<EditProfilePage> with AppMixin {
+  Uint8List? file;
+
   final formKey = GlobalKey<FormState>();
-  File? image;
   bool isChangedPhoto = false;
   bool? isUsernameAvailable;
   String? newImage;
@@ -48,8 +48,8 @@ class _EditProfilePageState extends State<EditProfilePage> with AppMixin {
   String? userName;
 
   late TextEditingController _fullNameController;
-  late TextEditingController _userNameController;
   bool _isLoading = false;
+  late TextEditingController _userNameController;
 
   @override
   void initState() {
@@ -59,18 +59,11 @@ class _EditProfilePageState extends State<EditProfilePage> with AppMixin {
   }
 
   Future _pickImage() async {
-    try {
-      final image = await ImagePicker().pickImage(source: ImageSource.gallery);
-      if (image == null) return;
-      final imageTemp = File(image.path);
-      setState(() {
-        this.image = imageTemp;
-        isChangedPhoto = true;
-      });
-      log('ini dari galeri: ${image.path}');
-    } on PlatformException catch (e) {
-      debugPrint('Failed to pick image: $e');
-    }
+    final pickedImage = await MediaService.pickImage();
+    setState(() {
+      isChangedPhoto = true;
+      file = pickedImage!;
+    });
   }
 
   PreferredSizeWidget _buildAppbar(BuildContext context) {
@@ -111,27 +104,17 @@ class _EditProfilePageState extends State<EditProfilePage> with AppMixin {
   Widget _buildPhotoProfile(BuildContext context) {
     return GestureDetector(
       onTap: () => _pickImage(),
-      child: widget.argument.profileImage.isEmpty == true
-          ? Container(
-              height: 120.r,
-              width: 120.r,
-              decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.black38,
-              ),
-              child: Icon(
-                Icons.camera_enhance,
-                color: Colors.black,
-                size: 24.r,
-              ),
+      child: isChangedPhoto
+          ? CircleAvatar(
+              radius: 60.r,
+              backgroundImage: MemoryImage(file!),
             )
           : ClipRRect(
-              borderRadius: BorderRadius.circular(50.r),
-              child: Image.file(
-                image ?? File(widget.argument.profileImage),
-                height: 100.r,
-                width: 100.r,
-                fit: BoxFit.cover,
+              borderRadius: BorderRadius.circular(500.r),
+              child: CustomCachedNetworkImage(
+                height: 120.r,
+                width: 120.r,
+                imageUrl: widget.argument.profileImage,
               ),
             ),
     );
@@ -141,7 +124,7 @@ class _EditProfilePageState extends State<EditProfilePage> with AppMixin {
     final CollectionReference userCollection =
         FirebaseFirestore.instance.collection('users');
     QuerySnapshot querySnapshot =
-        await userCollection.where('username', isEqualTo: userName).get();
+        await userCollection.where('userName', isEqualTo: userName).get();
     return querySnapshot.docs.isEmpty;
   }
 
@@ -158,6 +141,7 @@ class _EditProfilePageState extends State<EditProfilePage> with AppMixin {
       onChanged: (val) {
         setState(() {
           userName = val.trim();
+          log(userName.toString());
           (_fullNameController.text.trim() == widget.argument.fullName &&
                   !isChangedPhoto == true)
               ? _checkUsername(userName!).then((value) {
@@ -203,27 +187,26 @@ class _EditProfilePageState extends State<EditProfilePage> with AppMixin {
     );
   }
 
+  Future<Uint8List> fetchData(String url) async {
+    final response = await http.get(Uri.parse(url));
+    if (response.statusCode == 200) {
+      return Uint8List.fromList(response.bodyBytes);
+    } else {
+      throw Exception('Failed to load data');
+    }
+  }
+
   void _updateData() async {
     if (formKey.currentState!.validate()) {
       setState(() {
         _isLoading = true;
       });
-
-      await DatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
-          .editUserData(
-        fullname: newName ?? widget.argument.fullName,
-        profilePicture: image?.path ?? widget.argument.profileImage,
-        userName: userName ?? widget.argument.userName,
-      )
-          .whenComplete(() async {
-        QuerySnapshot snapshot =
-            await DatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
-                .gettingUserData(widget.argument.email);
-        // saving the values to our shared preferences
-        await SfHelper.saveFullNameSF(snapshot.docs[0]['fullName']);
-        await SfHelper.saveUsernameSF(snapshot.docs[0]['username']);
-        await SfHelper.saveProfilePictureSF(snapshot.docs[0]['profilePic']);
-      });
+      await Provider.of<FirebaseProvider>(context, listen: false).editProfile(
+        username: userName ?? widget.argument.userName,
+        name: newName ?? widget.argument.fullName,
+        profilePicture: file ?? await fetchData(widget.argument.profileImage),
+      );
+      // .whenComplete(() => navigatorKey.currentState?.pop());
 
       setState(() {
         _isLoading = false;

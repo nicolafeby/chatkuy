@@ -1,9 +1,13 @@
+import 'dart:developer';
+
 import 'package:chatkuy/models/message_model.dart';
 import 'package:chatkuy/models/user_model.dart';
 import 'package:chatkuy/service/firestore_service.dart';
+import 'package:chatkuy/service/storage_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class FirebaseProvider extends ChangeNotifier {
   ScrollController scrollController = ScrollController();
@@ -19,9 +23,8 @@ class FirebaseProvider extends ChangeNotifier {
         .orderBy('lastActive', descending: true)
         .snapshots(includeMetadataChanges: true)
         .listen((users) {
-      this.users = users.docs
-          .map((doc) => UserModel.fromJson(doc.data()))
-          .toList();
+      this.users =
+          users.docs.map((doc) => UserModel.fromJson(doc.data())).toList();
       notifyListeners();
     });
     return users;
@@ -39,6 +42,29 @@ class FirebaseProvider extends ChangeNotifier {
     return user;
   }
 
+  Future editProfile({
+    required String username,
+    required String name,
+    required Uint8List profilePicture,
+  }) async {
+    try {
+      final uid = FirebaseAuth.instance.currentUser?.uid;
+      String? image = await FirebaseStorageService.uploadImage(
+          profilePicture, 'image/profile/$uid');
+
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(FirebaseAuth.instance.currentUser?.uid)
+          .update({
+        'userName': username,
+        'name': name,
+        'image': image,
+      });
+    } catch (e) {
+      log('gagal: $e');
+    }
+  }
+
   List<Message> getMessages(String receiverId) {
     FirebaseFirestore.instance
         .collection('users')
@@ -49,9 +75,8 @@ class FirebaseProvider extends ChangeNotifier {
         .orderBy('sentTime', descending: false)
         .snapshots(includeMetadataChanges: true)
         .listen((messages) {
-      this.messages = messages.docs
-          .map((doc) => Message.fromJson(doc.data()))
-          .toList();
+      this.messages =
+          messages.docs.map((doc) => Message.fromJson(doc.data())).toList();
       notifyListeners();
 
       scrollDown();
@@ -59,17 +84,14 @@ class FirebaseProvider extends ChangeNotifier {
     return messages;
   }
 
-  void scrollDown() =>
-      WidgetsBinding.instance.addPostFrameCallback((_) {
+  void scrollDown() => WidgetsBinding.instance.addPostFrameCallback((_) {
         if (scrollController.hasClients) {
-          scrollController.jumpTo(
-              scrollController.position.maxScrollExtent);
+          scrollController.jumpTo(scrollController.position.maxScrollExtent);
         }
       });
 
   Future<void> searchUser(String name) async {
-    search =
-        await FirebaseFirestoreService.searchUser(name);
+    search = await FirebaseFirestoreService.searchUser(name);
     notifyListeners();
   }
 }

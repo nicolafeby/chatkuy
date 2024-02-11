@@ -1,18 +1,12 @@
-import 'dart:developer';
 
 import 'package:chatkuy/constants/app_constant.dart';
 import 'package:chatkuy/helper/sf_helper.dart';
 import 'package:chatkuy/presentation/base/base_page.dart';
 import 'package:chatkuy/router/router_constant.dart';
 import 'package:chatkuy/service/auth_service.dart';
-import 'package:chatkuy/service/database_service.dart';
-import 'package:chatkuy/service/firestore_service.dart';
 import 'package:chatkuy/service/notif_service.dart';
 import 'package:chatkuy/widgets/custom_button_widget.dart';
-import 'package:chatkuy/widgets/snackbar_widget.dart';
 import 'package:chatkuy/widgets/text_input_decoration.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -33,7 +27,7 @@ class _LoginPageState extends State<LoginPage> {
   final formKey = GlobalKey<FormState>();
   String email = "";
   String password = "";
-  bool _isLoading = false;
+  final bool _isLoading = false;
   AuthService authService = AuthService();
 
   final emailController = TextEditingController();
@@ -186,28 +180,20 @@ class _LoginPageState extends State<LoginPage> {
       builder: (context) => const Center(child: CircularProgressIndicator()),
     );
 
-    try {
-      await FirebaseAuth.instance
-          .signInWithEmailAndPassword(
-        email: emailController.text.trim(),
-        password: passwordController.text.trim(),
-      )
-          .then((value) {
+    authService
+        .login(
+      email: emailController.text.trim(),
+      password: passwordController.text.trim(),
+    )
+        .then((value) async {
+      if (value == true) {
+        await SfHelper.saveUserLoggedInStatus(true);
         navigator.pushNamedAndRemoveUntil(
             RouterConstant.basePage, (route) => false,
             arguments: const BasePageArg(route: BasePageRoute.chat));
-      });
-
-      await FirebaseFirestoreService.updateUserData(
-        {'lastActive': DateTime.now()},
-      );
-
-      await notifications.requestPermission();
-      await notifications.getToken();
-    } on FirebaseAuthException catch (e) {
-      log(e.toString());
-      final snackBar = SnackBar(content: Text(e.message!));
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-    }
+        await notifications.requestPermission();
+        await notifications.getToken();
+      }
+    });
   }
 }
