@@ -24,18 +24,18 @@ class RegisterPage extends StatefulWidget {
 class _RegisterPageState extends State<RegisterPage> {
   static final notifications = NotificationsService();
 
-  final FocusNode _focusNode = FocusNode();
-
   AuthService authService = AuthService();
   final confirmPasswordController = TextEditingController();
   final emailController = TextEditingController();
   Uint8List? file;
   final formKey = GlobalKey<FormState>();
   final fullNameController = TextEditingController();
-  bool? isUsernameAvailable;
   bool? isEmailAvailable;
+  bool? isUsernameAvailable;
   final passwordController = TextEditingController();
   final usernameController = TextEditingController();
+
+  final FocusNode _focusNode = FocusNode();
 
   Future signUp() async {
     var navigator = Navigator.of(context);
@@ -213,7 +213,7 @@ class _RegisterPageState extends State<RegisterPage> {
         } else {
           return RegExp(
             r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+",
-          ).hasMatch(val!)
+          ).hasMatch(val)
               ? null
               : "Please enter a valid email";
         }

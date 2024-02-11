@@ -1,11 +1,14 @@
+import 'package:chatkuy/presentation/auth/forgot_password/forgot_password_page.dart';
 import 'package:chatkuy/presentation/auth/login/login_page.dart';
 import 'package:chatkuy/presentation/auth/register/register_page.dart';
+import 'package:chatkuy/presentation/auth/verify_email/verify_email_page.dart';
 import 'package:chatkuy/presentation/base/base_page.dart';
 import 'package:chatkuy/presentation/chat/page/chat_page.dart';
-import 'package:chatkuy/presentation/edit_profile/edit_profile_page.dart';
+import 'package:chatkuy/presentation/profile/edit_profile/edit_profile_page.dart';
 import 'package:chatkuy/presentation/group_info/page/group_info_page.dart';
 import 'package:chatkuy/presentation/home/page/home_page.dart';
-import 'package:chatkuy/presentation/profile/profile_page.dart';
+import 'package:chatkuy/presentation/profile/profile/profile_page.dart';
+import 'package:chatkuy/presentation/profile/view_user_profile/view_user_profile_page.dart';
 import 'package:chatkuy/presentation/search/search_page.dart';
 import 'package:chatkuy/presentation/splash/splash_screen.dart';
 import 'package:chatkuy/router/router_constant.dart';
@@ -45,6 +48,12 @@ class Router {
         );
       case RouterConstant.basePage:
         return BasePage(argument: settings.arguments as BasePageArg);
+      case RouterConstant.verifyEmailPage:
+        return const VerifyEmailPage();
+      case RouterConstant.forgotPasswordPage:
+        return const ForgotPasswordPage();
+      case RouterConstant.viewUserProfilePage:
+        return const ViewUserProfilePage();
       default:
         return const SplashScreenPage();
     }

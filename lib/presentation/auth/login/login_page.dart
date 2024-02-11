@@ -168,6 +168,8 @@ class _LoginPageState extends State<LoginPage> {
                           },
                         ),
                         const SizedBox(height: 20),
+                        _buildForgotPassword(),
+                        SizedBox(height: 20.h),
                         CustomButtonWidget(
                           text: 'Sign In',
                           onPressed: signIn,
@@ -196,6 +198,28 @@ class _LoginPageState extends State<LoginPage> {
                     )),
               ),
             ),
+    );
+  }
+
+  Widget _buildForgotPassword() {
+    return Row(
+      children: [
+        const Spacer(),
+        GestureDetector(
+          child: Text(
+            'Forgot Password?',
+            style: TextStyle(
+              decoration: TextDecoration.underline,
+              color: Theme.of(context).colorScheme.secondary,
+              fontSize: 14.sp,
+            ),
+          ),
+          onTap: () => Navigator.pushNamed(
+            context,
+            RouterConstant.forgotPasswordPage,
+          ),
+        ),
+      ],
     );
   }
 }

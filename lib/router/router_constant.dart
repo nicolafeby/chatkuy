@@ -8,4 +8,7 @@ class RouterConstant {
   static const String searchPage = '/search';
   static const String editProfilePage = '/editProfile';
   static const String basePage = '/basePage';
+  static const String forgotPasswordPage = '/forgotPasswordPage';
+  static const String verifyEmailPage = '/verifyEmailPage';
+  static const String viewUserProfilePage = '/viewUserProfilePage';
 }

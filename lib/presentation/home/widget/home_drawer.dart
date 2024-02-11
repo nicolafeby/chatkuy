@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:chatkuy/presentation/profile/profile_page.dart';
+import 'package:chatkuy/presentation/profile/profile/profile_page.dart';
 import 'package:chatkuy/router/router_constant.dart';
 import 'package:chatkuy/service/auth_service.dart';
 import 'package:flutter/material.dart';
