@@ -5,8 +5,10 @@ class UserModel {
   final String image;
   final DateTime lastActive;
   final bool isOnline;
+  final String userName;
 
   const UserModel({
+    required this.userName,
     required this.name,
     required this.image,
     required this.lastActive,
@@ -15,14 +17,14 @@ class UserModel {
     this.isOnline = false,
   });
 
-  factory UserModel.fromJson(Map<String, dynamic> json) =>
-      UserModel(
+  factory UserModel.fromJson(Map<String, dynamic> json) => UserModel(
         uid: json['uid'],
         name: json['name'],
         image: json['image'],
         email: json['email'],
         isOnline: json['isOnline'] ?? false,
         lastActive: json['lastActive'].toDate(),
+        userName: json['userName'],
       );
 
   Map<String, dynamic> toJson() => {
@@ -32,5 +34,6 @@ class UserModel {
         'email': email,
         'isOnline': isOnline,
         'lastActive': lastActive,
+        'userName': userName,
       };
 }

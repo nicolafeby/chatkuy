@@ -32,8 +32,7 @@ class ChatDisplay extends StatelessWidget {
                     value.messages[reversedIndex].messageType ==
                         MessageType.text;
 
-                final isMe = uid !=
-                    value.messages[reversedIndex].senderId;
+                final isMe = uid != value.messages[reversedIndex].senderId;
 
                 return isTextMessage
                     ? MessageTile(
