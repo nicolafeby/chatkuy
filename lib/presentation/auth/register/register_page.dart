@@ -2,19 +2,13 @@ import 'dart:developer';
 
 import 'package:chatkuy/constants/app_constant.dart';
 import 'package:chatkuy/helper/sf_helper.dart';
-import 'package:chatkuy/main.dart';
 import 'package:chatkuy/presentation/base/base_page.dart';
 import 'package:chatkuy/router/router_constant.dart';
 import 'package:chatkuy/service/auth_service.dart';
-import 'package:chatkuy/service/database_service.dart';
-import 'package:chatkuy/service/firestore_service.dart';
 import 'package:chatkuy/service/media_service.dart';
 import 'package:chatkuy/service/notif_service.dart';
-import 'package:chatkuy/service/storage_service.dart';
-import 'package:chatkuy/widgets/snackbar_widget.dart';
 import 'package:chatkuy/widgets/text_input_decoration.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -28,60 +22,18 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  final nameController = TextEditingController();
+  final fullNameController = TextEditingController();
   final emailController = TextEditingController();
+  final usernameController = TextEditingController();
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
 
   AuthService authService = AuthService();
-  String email = '';
   final formKey = GlobalKey<FormState>();
-  String fullName = '';
-  String password = '';
-  String profilePicture = '';
-  String userName = '';
   Uint8List? file;
   bool? isUsernameAvailable;
 
-  bool _isLoading = false;
-
   static final notifications = NotificationsService();
-
-  void register() async {
-    var navigator = Navigator.of(context);
-    if (formKey.currentState!.validate()) {
-      setState(() {
-        _isLoading = true;
-      });
-      await authService
-          .registerWithEmainAndPassword(
-        email: email,
-        fullName: fullName,
-        password: password,
-        profilePicture: profilePicture,
-        userName: userName,
-      )
-          .then((value) async {
-        if (value == true) {
-          // saving the shared preference state
-          await SfHelper.saveUserLoggedInStatus(true);
-          await SfHelper.saveUserEmailSF(email);
-          await SfHelper.saveFullNameSF(fullName);
-          await SfHelper.saveUsernameSF(userName);
-          await SfHelper.saveProfilePictureSF(profilePicture);
-          navigator.pushReplacementNamed(
-            RouterConstant.basePage,
-            arguments: const BasePageArg(route: BasePageRoute.chat),
-          );
-        } else {
-          showSnackbar(context, Colors.red, value);
-          setState(() {
-            _isLoading = false;
-          });
-        }
-      });
-    }
-  }
 
   Future<bool> _checkUsername(String userName) async {
     final CollectionReference userCollection =
@@ -120,8 +72,7 @@ class _RegisterPageState extends State<RegisterPage> {
           )),
       onChanged: (val) {
         setState(() {
-          userName = val;
-          _checkUsername(userName).then((value) {
+          _checkUsername(val).then((value) {
             isUsernameAvailable = value;
             log('Username is available: $isUsernameAvailable');
           });
@@ -158,9 +109,7 @@ class _RegisterPageState extends State<RegisterPage> {
         }
       },
       onChanged: (val) {
-        setState(() {
-          password = val;
-        });
+        setState(() {});
       },
     );
   }
@@ -177,9 +126,7 @@ class _RegisterPageState extends State<RegisterPage> {
         ),
       ),
       onChanged: (val) {
-        setState(() {
-          email = val;
-        });
+        setState(() {});
       },
       validator: (val) {
         return RegExp(
@@ -193,7 +140,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
   Widget _buildFullname() {
     return TextFormField(
-      controller: nameController,
+      controller: fullNameController,
       textInputAction: TextInputAction.next,
       decoration: textInputDecoration.copyWith(
           labelText: "Full Name",
@@ -202,9 +149,7 @@ class _RegisterPageState extends State<RegisterPage> {
             color: Theme.of(context).primaryColor,
           )),
       onChanged: (val) {
-        setState(() {
-          fullName = val;
-        });
+        setState(() {});
       },
       validator: (val) {
         if (val!.isNotEmpty) {
@@ -217,22 +162,6 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   Widget _buildAddProfileImage() {
-    // return GestureDetector(
-    //   onTap: () {}, //=> _pickImage(),
-    //   child: Container(
-    //     height: 100.r,
-    //     width: 100.r,
-    //     decoration: BoxDecoration(
-    //       color: Colors.grey[700],
-    //       shape: BoxShape.circle,
-    //     ),
-    //     child: Icon(
-    //       Icons.camera_enhance,
-    //       color: Colors.white,
-    //       size: 24.r,
-    //     ),
-    //   ),
-    // );
     return GestureDetector(
       onTap: () async {
         final pickedImage = await MediaService.pickImage();
@@ -258,73 +187,64 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _isLoading
-          ? Center(
-              child: CircularProgressIndicator(
-                  color: Theme.of(context).primaryColor),
-            )
-          : SingleChildScrollView(
-              child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 80),
-                child: Form(
-                  key: formKey,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      const Text(
-                        "ChatKuy",
-                        style: TextStyle(
-                            fontSize: 40, fontWeight: FontWeight.bold),
-                      ),
-                      const SizedBox(height: 10),
-                      const Text(
-                        "Create your account now to chat and explore",
-                        style: TextStyle(
-                            fontSize: 15, fontWeight: FontWeight.w400),
-                      ),
-                      // Image.asset("assets/images/register.png"),
-                      SizedBox(height: 24.h),
-                      _buildAddProfileImage(),
-                      SizedBox(height: 24.h),
-                      _buildFullname(),
-                      const SizedBox(height: 15),
-                      _buildUsername(),
-                      const SizedBox(height: 15),
-                      _buildEmail(),
-                      const SizedBox(height: 15),
-                      _buildPassword(),
-                      const SizedBox(height: 20),
-                      _buildRegisterButton(),
-                      SizedBox(height: 24.h),
-                      Text.rich(
-                        TextSpan(
-                          text: "Already have an account? ",
-                          style: const TextStyle(
-                              color: Colors.black, fontSize: 14),
-                          children: <TextSpan>[
-                            TextSpan(
-                              text: "Login now",
-                              style: const TextStyle(
-                                color: AppColor.primaryColor,
-                              ),
-                              recognizer: TapGestureRecognizer()
-                                ..onTap = () {
-                                  Navigator.pushReplacementNamed(
-                                    context,
-                                    RouterConstant.loginPage,
-                                  );
-                                },
-                            ),
-                          ],
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 80),
+          child: Form(
+            key: formKey,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                const Text(
+                  "ChatKuy",
+                  style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 10),
+                const Text(
+                  "Create your account now to chat and explore",
+                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w400),
+                ),
+                // Image.asset("assets/images/register.png"),
+                SizedBox(height: 24.h),
+                _buildAddProfileImage(),
+                SizedBox(height: 24.h),
+                _buildFullname(),
+                const SizedBox(height: 15),
+                _buildUsername(),
+                const SizedBox(height: 15),
+                _buildEmail(),
+                const SizedBox(height: 15),
+                _buildPassword(),
+                const SizedBox(height: 20),
+                _buildRegisterButton(),
+                SizedBox(height: 24.h),
+                Text.rich(
+                  TextSpan(
+                    text: "Already have an account? ",
+                    style: const TextStyle(color: Colors.black, fontSize: 14),
+                    children: <TextSpan>[
+                      TextSpan(
+                        text: "Login now",
+                        style: const TextStyle(
+                          color: AppColor.primaryColor,
                         ),
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () {
+                            Navigator.pushReplacementNamed(
+                              context,
+                              RouterConstant.loginPage,
+                            );
+                          },
                       ),
                     ],
                   ),
                 ),
-              ),
+              ],
             ),
+          ),
+        ),
+      ),
     );
   }
 
@@ -347,19 +267,18 @@ class _RegisterPageState extends State<RegisterPage> {
 
     await authService
         .registerAccount(
-      fullName: nameController.text.trim(),
-      userName: userName,
+      fullName: fullNameController.text.trim(),
+      userName: usernameController.text.trim(),
       email: emailController.text.trim(),
       password: passwordController.text.trim(),
       profilePicture: file,
-      notifications: notifications,
     )
         .then((value) async {
       if (value == true) {
         await SfHelper.saveUserLoggedInStatus(true);
-        await SfHelper.saveUserEmailSF(email);
-        await SfHelper.saveFullNameSF(fullName);
-        await SfHelper.saveUsernameSF(userName);
+        await SfHelper.saveUserEmailSF(emailController.text.trim());
+        await SfHelper.saveFullNameSF(fullNameController.text.trim());
+        await SfHelper.saveUsernameSF(usernameController.text.trim());
 
         navigator.pushNamedAndRemoveUntil(
             RouterConstant.basePage, (route) => false,

@@ -1,8 +1,10 @@
+import 'dart:developer';
+
 import 'package:chatkuy/helper/sf_helper.dart';
-import 'package:chatkuy/service/database_service.dart';
+import 'package:chatkuy/main.dart';
 import 'package:chatkuy/service/firestore_service.dart';
-import 'package:chatkuy/service/notif_service.dart';
 import 'package:chatkuy/service/storage_service.dart';
+import 'package:chatkuy/widgets/snackbar_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -10,29 +12,31 @@ import 'package:flutter/material.dart';
 class AuthService {
   final FirebaseAuth auth = FirebaseAuth.instance;
 
-  Future registerWithEmainAndPassword({
-    required String fullName,
-    required String userName,
+  Future login({
     required String email,
     required String password,
-    required String profilePicture,
   }) async {
     try {
-      User? user = (await auth.createUserWithEmailAndPassword(
-              email: email, password: password))
+      User? user = (await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      ))
           .user;
 
-      if (user != null) {
-        await DatabaseService(uid: user.uid).saveUserData(
-          fullName,
-          email,
-          profilePicture,
-          userName,
-        );
-        return true;
-      }
+      if (user != null) return true;
+
+      await FirebaseFirestoreService.updateUserData(
+        {'lastActive': DateTime.now()},
+      );
     } on FirebaseAuthException catch (e) {
-      return e.code;
+      navigatorKey.currentState?.pop();
+      // log(e.message!);
+      showSnackbar(navigatorKey.currentContext!, Colors.red, e.message!);
+      // if (mounted) {
+      //   showSnackbar(context, Colors.red, e.message.toString());
+      // }
+      // final snackBar = SnackBar(content: Text(e.message!));
+      // sm.showSnackBar(snackBar);
     }
   }
 
@@ -42,7 +46,6 @@ class AuthService {
     required String email,
     required String password,
     required Uint8List? profilePicture,
-    required NotificationsService notifications,
   }) async {
     try {
       User? user = (await auth.createUserWithEmailAndPassword(
@@ -59,15 +62,19 @@ class AuthService {
           image: image,
           email: user.email ?? '',
           uid: user.uid,
-          name: fullName,
+          fullName: fullName,
+          userName: userName,
         );
 
         return true;
       }
     } on FirebaseAuthException catch (e) {
-      return e.code;
+      // return e.code;
+      navigatorKey.currentState?.pop();
+      log(e.message!);
+      showSnackbar(navigatorKey.currentContext!, Colors.red, e.message!);
       // final snackBar = SnackBar(content: Text(e.message!));
-      // ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      // ScaffoldMessenger.of(navigatorKey.currentContext!).showSnackBar(snackBar);
     }
   }
 
@@ -80,7 +87,9 @@ class AuthService {
 
       if (user != null) return true;
     } on FirebaseAuthException catch (e) {
-      return e.code;
+      // return e.code;
+      log(e.message!);
+      showSnackbar(navigatorKey.currentContext!, Colors.red, e.message!);
     }
   }
 
@@ -88,9 +97,6 @@ class AuthService {
     try {
       await auth.signOut();
       await SfHelper.saveUserLoggedInStatus(false);
-      await SfHelper.saveUserEmailSF('');
-      await SfHelper.saveFullNameSF('');
-      await SfHelper.saveProfilePictureSF('');
     } on FirebaseAuthException catch (e) {
       return e.message;
     }

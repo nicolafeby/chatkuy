@@ -10,7 +10,8 @@ class FirebaseFirestoreService {
   static final firestore = FirebaseFirestore.instance;
 
   static Future createUser({
-    required String name,
+    required String fullName,
+    required String userName,
     required String image,
     required String email,
     required String uid,
@@ -18,10 +19,11 @@ class FirebaseFirestoreService {
     final user = UserModel(
       uid: uid,
       email: email,
-      name: name,
+      name: fullName,
       image: image,
       isOnline: true,
       lastActive: DateTime.now(),
+      userName: userName,
     );
 
     await firestore.collection('users').doc(uid).set(user.toJson());
