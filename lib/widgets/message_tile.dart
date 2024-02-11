@@ -1,7 +1,8 @@
-import 'package:chatkuy/helper/date_helper.dart';
 import 'package:chatkuy/models/message_model.dart';
+import 'package:chatkuy/widgets/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:image_preview/image_preview.dart';
 import 'package:intl/intl.dart';
 
 class MessageTile extends StatelessWidget {
@@ -96,17 +97,7 @@ class MessageTile extends StatelessWidget {
                     : const SizedBox(),
                 Flexible(
                   child: isImage
-                      ? Container(
-                          height: 200,
-                          width: 200,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(15),
-                            image: DecorationImage(
-                              image: NetworkImage(message.content),
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                        )
+                      ? _buildImageMessage(context)
                       : Text(message.content,
                           style: const TextStyle(color: Colors.white)),
                 ),
@@ -140,6 +131,25 @@ class MessageTile extends StatelessWidget {
         ),
         SizedBox(width: !isMe ? 0 : 4.w),
       ],
+    );
+  }
+
+  Widget _buildImageMessage(BuildContext context) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(8.r),
+      child: Hero(
+        tag: message.content,
+        child: GestureDetector(
+          onTap: () {
+            openImagePage(Navigator.of(context), imgUrl: message.content);
+          },
+          child: CustomCachedNetworkImage(
+            height: 180.r,
+            width: 180.r,
+            imageUrl: message.content,
+          ),
+        ),
+      ),
     );
   }
 }

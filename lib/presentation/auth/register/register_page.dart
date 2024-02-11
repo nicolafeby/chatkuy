@@ -22,24 +22,75 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  final fullNameController = TextEditingController();
-  final emailController = TextEditingController();
-  final usernameController = TextEditingController();
-  final passwordController = TextEditingController();
-  final confirmPasswordController = TextEditingController();
+  static final notifications = NotificationsService();
+
+  final FocusNode _focusNode = FocusNode();
 
   AuthService authService = AuthService();
-  final formKey = GlobalKey<FormState>();
+  final confirmPasswordController = TextEditingController();
+  final emailController = TextEditingController();
   Uint8List? file;
+  final formKey = GlobalKey<FormState>();
+  final fullNameController = TextEditingController();
   bool? isUsernameAvailable;
+  bool? isEmailAvailable;
+  final passwordController = TextEditingController();
+  final usernameController = TextEditingController();
 
-  static final notifications = NotificationsService();
+  Future signUp() async {
+    var navigator = Navigator.of(context);
+    final isValid = formKey.currentState!.validate();
+    if (!isValid) return;
+    if (file == null) {
+      const snackBar =
+          SnackBar(content: Text('Please select a profile picture'));
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      return;
+    }
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(child: CircularProgressIndicator()),
+    );
+
+    await authService
+        .registerAccount(
+      fullName: fullNameController.text.trim(),
+      userName: usernameController.text.trim(),
+      email: emailController.text.trim(),
+      password: passwordController.text.trim(),
+      profilePicture: file,
+    )
+        .then((value) async {
+      if (value == true) {
+        await SfHelper.saveUserLoggedInStatus(true);
+        await SfHelper.saveUserEmailSF(emailController.text.trim());
+        await SfHelper.saveFullNameSF(fullNameController.text.trim());
+        await SfHelper.saveUsernameSF(usernameController.text.trim());
+
+        navigator.pushNamedAndRemoveUntil(
+            RouterConstant.basePage, (route) => false,
+            arguments: const BasePageArg(route: BasePageRoute.chat));
+        await notifications.requestPermission();
+        await notifications.getToken();
+      }
+    });
+  }
+
+  Future<bool> _checkEmail(String email) async {
+    final CollectionReference userCollection =
+        FirebaseFirestore.instance.collection('users');
+    QuerySnapshot querySnapshot =
+        await userCollection.where('email', isEqualTo: email).get();
+    return querySnapshot.docs.isEmpty;
+  }
 
   Future<bool> _checkUsername(String userName) async {
     final CollectionReference userCollection =
         FirebaseFirestore.instance.collection('users');
     QuerySnapshot querySnapshot =
-        await userCollection.where('username', isEqualTo: userName).get();
+        await userCollection.where('userName', isEqualTo: userName).get();
     return querySnapshot.docs.isEmpty;
   }
 
@@ -114,8 +165,30 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
+  Widget _buildConfirmationPassword() {
+    return TextFormField(
+      controller: confirmPasswordController,
+      textInputAction: TextInputAction.next,
+      obscureText: true,
+      decoration: textInputDecoration.copyWith(
+          labelText: "Konfirmasi Password",
+          prefixIcon: Icon(
+            Icons.lock,
+            color: Theme.of(context).primaryColor,
+          )),
+      validator: (val) =>
+          passwordController.text != confirmPasswordController.text
+              ? 'Passwords do not match'
+              : null,
+      onChanged: (val) {
+        setState(() {});
+      },
+    );
+  }
+
   Widget _buildEmail() {
     return TextFormField(
+      focusNode: _focusNode,
       controller: emailController,
       textInputAction: TextInputAction.next,
       decoration: textInputDecoration.copyWith(
@@ -126,14 +199,24 @@ class _RegisterPageState extends State<RegisterPage> {
         ),
       ),
       onChanged: (val) {
+        _checkEmail(val).then((value) {
+          isEmailAvailable = value;
+          log('email already takken');
+        });
         setState(() {});
       },
       validator: (val) {
-        return RegExp(
-          r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+",
-        ).hasMatch(val!)
-            ? null
-            : "Please enter a valid email";
+        if (isEmailAvailable == false) {
+          return "Email sudah dipakai";
+        } else if (val!.isNotEmpty) {
+          return null;
+        } else {
+          return RegExp(
+            r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+",
+          ).hasMatch(val!)
+              ? null
+              : "Please enter a valid email";
+        }
       },
     );
   }
@@ -187,6 +270,7 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 80),
@@ -216,6 +300,8 @@ class _RegisterPageState extends State<RegisterPage> {
                 _buildEmail(),
                 const SizedBox(height: 15),
                 _buildPassword(),
+                const SizedBox(height: 15),
+                _buildConfirmationPassword(),
                 const SizedBox(height: 20),
                 _buildRegisterButton(),
                 SizedBox(height: 24.h),
@@ -246,46 +332,5 @@ class _RegisterPageState extends State<RegisterPage> {
         ),
       ),
     );
-  }
-
-  Future signUp() async {
-    var navigator = Navigator.of(context);
-    final isValid = formKey.currentState!.validate();
-    if (!isValid) return;
-    if (file == null) {
-      const snackBar =
-          SnackBar(content: Text('Please select a profile picture'));
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-      return;
-    }
-
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => const Center(child: CircularProgressIndicator()),
-    );
-
-    await authService
-        .registerAccount(
-      fullName: fullNameController.text.trim(),
-      userName: usernameController.text.trim(),
-      email: emailController.text.trim(),
-      password: passwordController.text.trim(),
-      profilePicture: file,
-    )
-        .then((value) async {
-      if (value == true) {
-        await SfHelper.saveUserLoggedInStatus(true);
-        await SfHelper.saveUserEmailSF(emailController.text.trim());
-        await SfHelper.saveFullNameSF(fullNameController.text.trim());
-        await SfHelper.saveUsernameSF(usernameController.text.trim());
-
-        navigator.pushNamedAndRemoveUntil(
-            RouterConstant.basePage, (route) => false,
-            arguments: const BasePageArg(route: BasePageRoute.chat));
-        await notifications.requestPermission();
-        await notifications.getToken();
-      }
-    });
   }
 }
