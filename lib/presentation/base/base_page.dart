@@ -1,6 +1,6 @@
 import 'package:chatkuy/constants/app_constant.dart';
 import 'package:chatkuy/presentation/home/page/home_page.dart';
-import 'package:chatkuy/presentation/profile/profile_page.dart';
+import 'package:chatkuy/presentation/profile/profile/profile_page.dart';
 import 'package:chatkuy/widgets/snackbar_widget.dart';
 import 'package:flutter/material.dart';
 

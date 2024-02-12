@@ -89,10 +89,10 @@ class _ChatTextFieldState extends State<ChatTextField> {
         receiverId: widget.receiverId,
         file: file!,
       );
-      // await notificationsService.sendNotification(
-      //   body: 'image........',
-      //   senderId: FirebaseAuth.instance.currentUser!.uid,
-      // );
+      await notificationsService.sendNotification(
+        body: 'image........',
+        senderId: FirebaseAuth.instance.currentUser!.uid, senderName: '',
+      );
     }
   }
 }

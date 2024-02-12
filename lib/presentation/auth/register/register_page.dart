@@ -213,7 +213,7 @@ class _RegisterPageState extends State<RegisterPage> {
         } else {
           return RegExp(
             r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+",
-          ).hasMatch(val!)
+          ).hasMatch(val)
               ? null
               : "Please enter a valid email";
         }

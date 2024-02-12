@@ -43,6 +43,10 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
     Provider.of<FirebaseProvider>(context, listen: false).getAllUsers();
     notificationService.firebaseNotification(context);
+    FirebaseFirestoreService.updateUserData({
+      'isOnline': true,
+      'lastActive': DateTime.now(),
+    });
   }
 
   Widget _buildChatList() {
