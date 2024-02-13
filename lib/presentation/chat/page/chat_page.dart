@@ -95,6 +95,7 @@ class _ChatPageState extends State<ChatPage> {
       elevation: 0,
       title: Consumer<FirebaseProvider>(
         builder: (context, value, child) {
+          // log('nama: ${value.user!.name}');
           senderName = value.user?.name;
           return value.user != null
               ? Row(
@@ -165,7 +166,7 @@ class _ChatPageState extends State<ChatPage> {
           },
           sendMessage: _sendText,
           messageController: messageController,
-          onTapCamera: _sendImage,
+          onTapCamera: () => _sendImage(),
         ),
       ],
     );

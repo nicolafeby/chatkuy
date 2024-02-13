@@ -1,6 +1,6 @@
 import 'package:chatkuy/helper/sf_helper.dart';
 import 'package:chatkuy/mixin/app_mixin.dart';
-import 'package:chatkuy/presentation/edit_profile/edit_profile_page.dart';
+import 'package:chatkuy/presentation/profile/edit_profile/edit_profile_page.dart';
 import 'package:chatkuy/provider/firebase_provider.dart';
 import 'package:chatkuy/router/router_constant.dart';
 import 'package:chatkuy/service/auth_service.dart';
@@ -77,7 +77,6 @@ class _ProfilePageState extends State<ProfilePage> with AppMixin {
         padding: EdgeInsets.all(16.r),
         child: Consumer<FirebaseProvider>(
           builder: (context, value, child) {
-            
             image = value.user?.image ?? '';
             userName = value.user?.userName ?? '';
             fullName = value.user?.name ?? '';

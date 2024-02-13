@@ -3,7 +3,10 @@ import 'package:chatkuy/main.dart';
 import 'package:chatkuy/models/user_model.dart';
 import 'package:chatkuy/presentation/chat/page/chat_page.dart';
 import 'package:chatkuy/router/router_constant.dart';
+import 'package:chatkuy/widgets/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:image_preview/image_preview.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class UserItem extends StatelessWidget {
@@ -25,10 +28,11 @@ class UserItem extends StatelessWidget {
         leading: Stack(
           alignment: Alignment.bottomRight,
           children: [
-            CircleAvatar(
-              radius: 30,
-              backgroundImage: NetworkImage(user.image),
-            ),
+            // CircleAvatar(
+            //   radius: 30,
+            //   backgroundImage: NetworkImage(user.image),
+            // ),
+            _buildImageMessage(context),
             Padding(
               padding: const EdgeInsets.only(bottom: 10),
               child: CircleAvatar(
@@ -53,6 +57,25 @@ class UserItem extends StatelessWidget {
             color: AppColor.primaryColor,
             fontSize: 15,
             overflow: TextOverflow.ellipsis,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildImageMessage(BuildContext context) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(80.r),
+      child: Hero(
+        tag: user.image,
+        child: GestureDetector(
+          onTap: () {
+            openImagePage(Navigator.of(context), imgUrl: user.image);
+          },
+          child: CustomCachedNetworkImage(
+            height: 50.r,
+            width: 50.r,
+            imageUrl: user.image,
           ),
         ),
       ),

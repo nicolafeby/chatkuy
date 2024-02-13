@@ -129,10 +129,11 @@ class NotificationsService {
     });
   }
 
-  Future<void> sendNotification(
-      {required String body,
-      required String senderId,
-      required String senderName}) async {
+  Future<void> sendNotification({
+    required String body,
+    required String senderId,
+    required String senderName,
+  }) async {
     try {
       await http.post(
         Uri.parse('https://fcm.googleapis.com/fcm/send'),
